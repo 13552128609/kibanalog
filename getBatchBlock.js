@@ -61,3 +61,7 @@ async function test() {
 
 // 取消下面的注释以运行测试
 test();
+
+
+// 根据src chain的hash 找到目标链上的hash
+// "checkTransOnline checkHash"  AND "0x8e8be38f61ec40c943fa49e8bd5e4235e5eb976b9d9f69aff2e90f59cbd48f93"
