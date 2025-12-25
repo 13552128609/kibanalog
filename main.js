@@ -2,10 +2,25 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-async function getLogs(net, keywords, query_period) {
+// Helper function to parse duration strings like "1m2s" to seconds
+function parseDuration(durationStr) {
+  if (!durationStr) return 'N/A';
+  
+  // Handle XmYs format (e.g., 1m2s)
+  const minutesMatch = durationStr.match(/(\d+)m/);
+  const secondsMatch = durationStr.match(/(\d+\.?\d*)s/);
+  
+  let totalSeconds = 0;
+  if (minutesMatch) totalSeconds += parseInt(minutesMatch[1]) * 60;
+  if (secondsMatch) totalSeconds += parseFloat(secondsMatch[1]);
+  
+  return totalSeconds.toFixed(6); // Keep 6 decimal places for consistency
+}
+
+async function getLogs(net, keywords, query_period, size) {
   const url = 'http://log.wanchain.org:9200/_search?pretty';
   const queryData = {
-    size: 200,
+    size: size,
     sort: [{ "@timestamp": { "order": "desc" } }],
     query: {
       bool: {
@@ -46,27 +61,27 @@ async function getLogs(net, keywords, query_period) {
       const timestamp = log._source['@timestamp'];
 
       // Extract fields using regex
-      const hashXMatch = message.match(/pk:\s*(0x[a-fA-F0-9]+)/);
+      const originTxMatch = message.match(/"originTx"\s*:\s*"(0x[a-fA-F0-9]+)"/);
       const hashDataMatch = message.match(/HashData:\s*(0x[a-fA-F0-9]+)/);
-      const duringMatch = message.match(/during\(sec\)=([\d.]+)s/);
-      const duringActMatch = message.match(/duringAct\(sec\)=([\d.]+)s/);
+      const duringMatch = message.match(/during\(sec\)=([\d.m]+s?)/);
+      const duringActMatch = message.match(/duringAct\(sec\)=([\d.m]+s?)/);
 
       results.push({
         timestamp,
-        hashX: hashXMatch ? hashXMatch[1] : 'N/A',
+        originTx: originTxMatch ? originTxMatch[1] : 'N/A',
         hashData: hashDataMatch ? hashDataMatch[1] : 'N/A',
-        during: duringMatch ? duringMatch[1] : 'N/A',
-        duringAct: duringActMatch ? duringActMatch[1] : 'N/A',
+        during: duringMatch ? parseDuration(duringMatch[1]) : 'N/A',
+        duringAct: duringActMatch ? parseDuration(duringActMatch[1]) : 'N/A',
         rawMessage: message
       });
     });
 
-    // Generate CSV content
-    const csvHeader = 'Timestamp,HashX,HashData,During(s),DuringAct(s),RawMessage\n';
+    // Generate CSV content    
+    const csvHeader = 'Timestamp,OriginTx,HashData,During(s),DuringAct(s),RawMessage\n';
     const csvRows = results.map(log => {
       // Replace newlines in the message with a space to prevent line breaks in CSV
-      const cleanMessage = log.rawMessage.replace(/\n/g, '').replace(/"/g, '""');
-      return `"${log.timestamp}","${log.hashX}","${log.hashData}","${log.during}","${log.duringAct}","${cleanMessage}"`;
+      const cleanMessage = log.rawMessage.replace(/\n/g, ' ').replace(/"/g, "'");
+      return `"${log.timestamp}","${log.originTx}","${log.hashData}","${log.during}","${log.duringAct}","${cleanMessage}"`;
     }).join('\n');
 
     const csvContent = csvHeader + csvRows;
@@ -85,5 +100,5 @@ async function getLogs(net, keywords, query_period) {
 }
 
 // Example usage
-getLogs("main", ["SignMpcTransaction", "successfully"], 86400)
+getLogs("main", ["SignMpcTransaction", "successfully"], 86400, 1)
   .catch(console.error);
