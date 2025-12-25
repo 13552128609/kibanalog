@@ -1,73 +1,30 @@
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
-async function getLogs(net, message, query_period) {
+async function getLogs(net, keywords, query_period) {
   const url = 'http://log.wanchain.org:9200/_search?pretty';
-  // // 构造查询 DSL (Domain Specific Language)
   const queryData = {
-    size: 2, // 返回最近的 20 条
-    sort: [
-      { "@timestamp": { "order": "desc" } } // 按时间倒序
-    ],
+    size: 200,
+    sort: [{ "@timestamp": { "order": "desc" } }],
     query: {
       bool: {
-        // must: 关键词匹配 (会计算相关性权重)
         must: [
-          {
-            match_phrase: { 
-              "message": "SignMpcTransaction" // 匹配短语，比 match 更精确
-            },
-            
-          },
-          {
-            match_phrase: { "type": "test" } 
-          },
-          {
-            match_phrase: { "message": "error" }
-          }
+          { match_phrase: { "message": keywords[0] } },
+          { match_phrase: { "type": net } },
+          { match_phrase: { "message": keywords[1] } }
         ],
-        // filter: 范围过滤 (不计算评分，速度快，支持缓存)
-        filter: [
-          {
-            range: {
-              "@timestamp": {
-                "gte": "now-24h", // gte: 大于等于；now-1h 表示 1 小时前
-                "lte": "now"    // lte: 小于等于
-              }
+        filter: [{
+          range: {
+            "@timestamp": {
+              "gte": `now-${query_period}s`,
+              "lte": "now"
             }
           }
-        ]
+        }]
       }
     }
   };
-
-
-
-// const queryData = {
-//         "query": {
-//             "bool": {
-//                 "must": [
-//                     {"match_phrase":{"type":net}},
-//                     //{"match_phrase":{"message": message}},
-//                     //{"match_phrase": {"message": tansaction}}
-
-//                 ],
-//                 "filter": [
-//                     {"range": {"@timestamp": {"gte": `now-${query_period}s"`}}}
-//                 ]
-//             }
-//         },
-//         //"from":0,
-//         "size":1,
-//         "sort": [
-//             {
-//                 "@timestamp": {
-//                     "order": "desc",
-//                     "unmapped_type": "long"
-//                 }
-//             }
-//         ],
-//         //"_source": {"include": ["type", "@timestamp","message"]}
-//     }
 
   try {
     const response = await axios.post(url, queryData, {
@@ -81,11 +38,52 @@ async function getLogs(net, message, query_period) {
     });
 
     const logs = response.data.hits.hits;
-    logs.forEach(log => console.log(log._source));
-    
+    const results = [];
+
+    // Process each log entry
+    logs.forEach(log => {
+      const message = log._source.message;
+      const timestamp = log._source['@timestamp'];
+
+      // Extract fields using regex
+      const hashXMatch = message.match(/pk:\s*(0x[a-fA-F0-9]+)/);
+      const hashDataMatch = message.match(/HashData:\s*(0x[a-fA-F0-9]+)/);
+      const duringMatch = message.match(/during\(sec\)=([\d.]+)s/);
+      const duringActMatch = message.match(/duringAct\(sec\)=([\d.]+)s/);
+
+      results.push({
+        timestamp,
+        hashX: hashXMatch ? hashXMatch[1] : 'N/A',
+        hashData: hashDataMatch ? hashDataMatch[1] : 'N/A',
+        during: duringMatch ? duringMatch[1] : 'N/A',
+        duringAct: duringActMatch ? duringActMatch[1] : 'N/A',
+        rawMessage: message
+      });
+    });
+
+    // Generate CSV content
+    const csvHeader = 'Timestamp,HashX,HashData,During(s),DuringAct(s),RawMessage\n';
+    const csvRows = results.map(log => {
+      // Replace newlines in the message with a space to prevent line breaks in CSV
+      const cleanMessage = log.rawMessage.replace(/\n/g, '').replace(/"/g, '""');
+      return `"${log.timestamp}","${log.hashX}","${log.hashData}","${log.during}","${log.duringAct}","${cleanMessage}"`;
+    }).join('\n');
+
+    const csvContent = csvHeader + csvRows;
+
+    // Write to file
+    const filename = `logs_${new Date().toISOString().replace(/[:.]/g, '-')}.csv`;
+    fs.writeFileSync(filename, csvContent);
+
+    console.log(`Found ${logs.length} logs. Data saved to ${filename}`);
+    return results;
+
   } catch (error) {
-    console.error('请求失败:', error.response ? error.response.data : error.message);
+    console.error('Error:', error.response ? error.response.data : error.message);
+    throw error;
   }
 }
 
-getLogs("main","SignMpcTransaction",86400);
+// Example usage
+getLogs("main", ["SignMpcTransaction", "successfully"], 86400)
+  .catch(console.error);
