@@ -1,6 +1,10 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const config = require('./config')
+const network = config.network;
+
+const filename=`./result/logs_${network}_mpcsuccess.csv`;
 
 // Helper function to parse duration strings like "1m2s" to seconds
 function parseDuration(durationStr) {
@@ -24,10 +28,9 @@ async function getTransactionTimestamp(originBlock) {
     console.log(`blockNumber: ${blockNumber}`);
   try {   
     
-      const blockResponse = await axios.post('https://arb1.arbitrum.io/rpc', {
+      const blockResponse = await axios.post(config[network].srcChain.url, {
         jsonrpc: "2.0",
-        method: "eth_getBlockByNumber",
-        //params: [blockNumber, false],
+        method: "eth_getBlockByNumber",        
         params: [0x01, false],
         id: 1
       });
@@ -118,8 +121,7 @@ async function getLogs(net, keywords, query_period, size) {
 
     const csvContent = csvHeader + csvRows;
 
-    // Write to file
-    const filename = `logs_${new Date().toISOString().replace(/[:.]/g, '-')}.csv`;
+    // Write to file    
     fs.writeFileSync(filename, csvContent);
 
     console.log(`Found ${logs.length} logs. Data saved to ${filename}`);

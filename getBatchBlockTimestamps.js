@@ -1,11 +1,20 @@
+/*
+get batch block timestamps, used for calculate during
+
+srcChain: ARB
+
+get the srcChain block timestamps, and return the timestamps array
+
+*/
 const axios = require('axios');
+const config = require('./config');
+const network = config.network;
 
 // Replace with your Infura project ID and secret
-const INFURA_PROJECT_ID = '6d2ab3e9ef104bb58df101a3c4509469';
-const INFURA_PROJECT_SECRET = 'YOUR_INFURA_PROJECT_SECRET'; // Only needed for private endpoints
-const RPC_URL = `https://arbitrum-mainnet.infura.io/v3/${INFURA_PROJECT_ID}`;
+//const RPC_URL = `https://arbitrum-mainnet.infura.io/v3/${INFURA_PROJECT_ID}`;
+const RPC_URL = config[network].srcChain.url;
 
-async function getBatchBlockTimestamps(blockNumbers) {
+async function getBatchBlockTimestamps(rpcUrl, blockNumbers) {
     // 1. 构造批处理请求体
     const batchData = blockNumbers.map((num, index) => ({
         jsonrpc: '2.0',
@@ -17,7 +26,7 @@ async function getBatchBlockTimestamps(blockNumbers) {
     try {
         const response = await axios.post(
             RPC_URL, 
-            batchData,           
+            batchData,
         );
 
         // 2. 解析返回的数组结果
@@ -34,7 +43,7 @@ async function getBatchBlockTimestamps(blockNumbers) {
                         hash: res.result.hash
                     };
                 }
-                return { 
+                return {
                     blockNumber: blockNumbers[res.id], 
                     error: res.error ? res.error.message : 'Fetch failed' 
                 };
@@ -52,7 +61,7 @@ async function getBatchBlockTimestamps(blockNumbers) {
 async function test() {
     const blocksToFetch = [170000000, 170000010, 170000020, 170000030, 170000040];
     try {
-        const results = await getBatchBlockTimestamps(blocksToFetch);
+        const results = await getBatchBlockTimestamps(RPC_URL,blocksToFetch);
         console.log('Results:', results);
     } catch (error) {
         console.error('Test failed:', error.message);
@@ -62,6 +71,9 @@ async function test() {
 // 取消下面的注释以运行测试
 test();
 
+module.exports = {
+    getBatchBlockTimestamps
+};
 
 // 根据src chain的hash 找到目标链上的hash
 // "checkTransOnline checkHash"  AND "0x8e8be38f61ec40c943fa49e8bd5e4235e5eb976b9d9f69aff2e90f59cbd48f93"
