@@ -21,6 +21,7 @@ const  config = {
     },
     "dstChain":{
       "url": `https://optimism-sepolia.infura.io/v3/${apiKey}`,
+      //"url": `http://gwan-testnet.wandevs.org:36891`,
     }
   }
 }

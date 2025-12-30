@@ -1,5 +1,5 @@
 const axios = require('axios');
-
+const util = require('../util/util');
 /**
  * Fetches timestamps for multiple blocks in batches
  * @param {string} rpcUrl - The RPC endpoint URL
@@ -8,6 +8,8 @@ const axios = require('axios');
  * @returns {Promise<Object>} Object mapping block numbers to timestamps
  */
 async function getBatchBlockTimestamps(rpcUrl, blockNumbers, batchSize = 50) {
+    console.log(`getBatchBlockTimestamps blockNumbers: ${util.stringifyObject(blockNumbers)}`);
+    console.log(`getBatchBlockTimestamps rpcUrl: ${util.stringifyObject(rpcUrl)}`);
     const blockTimestampMap = {};
     
     for (let i = 0; i < blockNumbers.length; i += batchSize) {
@@ -18,14 +20,14 @@ async function getBatchBlockTimestamps(rpcUrl, blockNumbers, batchSize = 50) {
             params: [blockNumber, false],
             id: i + idx
         }));
-console.log(`batchRequests: ${batchRequests}`);
+        console.log(`getBatchBlockTimestamps batchRequests: ${util.stringifyObject(batchRequests)}`);
         try {
             const response = await axios.post(rpcUrl, batchRequests, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-console.log(`response: ${response}`);
+            console.log(`getBatchBlockTimestamps response: ${util.stringifyObject(response)}`);
             // Process block responses
             response.data.forEach((blockResult, idx) => {
                 const blockNumber = blockBatch[idx];
@@ -53,7 +55,7 @@ module.exports = {
     getBatchBlockTimestamps
 };
 
-const config = require('./config').config;
+const config = require('../cfg/config').config;
 const network = "main";
 const RPC_URL = config[network].srcChain.url;
 console.log(`RPC_URL: ${RPC_URL}`);
@@ -71,7 +73,8 @@ async function test() {
 }
 
 // 取消下面的注释以运行测试
-test();
+
+//test();
 
 module.exports = {
     getBatchBlockTimestamps

@@ -73,6 +73,32 @@ function stringifyObject(obj, indent = 0, visited = new Set()) {
     return result;
 }
 
+
+async function makeRequestWithRetry(url, data, maxRetries = 3, delay = 1000) {
+    let lastError;
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            const response = await axios.post(url, data, {
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 10000 // 10 second timeout
+            });
+            return response;
+        } catch (error) {
+            lastError = error;
+            if (error.response && error.response.status < 500) {
+                // Don't retry for 4xx errors
+                throw error;
+            }
+            if (i < maxRetries - 1) {
+                console.log(`Retry ${i + 1}/${maxRetries} after error:`, error.message);
+                await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+            }
+        }
+    }
+    throw lastError;
+}
+
 module.exports = {
-    stringifyObject
+    stringifyObject,
+    makeRequestWithRetry
 };

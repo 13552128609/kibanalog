@@ -1,14 +1,14 @@
 const axios = require('axios');
 const { getBatchBlockTimestamps } = require('./getBatchBlockTimestamps');
-
-async function getTransactionTimestamp(network, dstTxHashes) {
+const config = require('../cfg/config').config;
+const util = require('../util/util');
+async function getTransactionTimestamp(rpcUrl, dstTxHashes,batchSize = 50) {
+    console.log(`getTransactionTimestamp rpcUrl: ${util.stringifyObject(rpcUrl)}`);
+    console.log(`getTransactionTimestamp dstTxHashes: ${util.stringifyObject(dstTxHashes)}`);
     if (!dstTxHashes || !dstTxHashes.length) {
         return [];
     }
-
-    const config = require('./config').config;
-    const rpcUrl = config[network].dstChain.url;
-    const batchSize = 50;
+    
     const results = {};
 
     // Process transaction hashes in batches
@@ -20,14 +20,14 @@ async function getTransactionTimestamp(network, dstTxHashes) {
             params: [txHash],
             id: i + index
         }));
-
+        console.log(`getTransactionTimestamp batchRequests: ${util.stringifyObject(batchRequests)}`);
         try {
             const response = await axios.post(rpcUrl, batchRequests, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-
+            console.log(`getTransactionTimestamp response: ${util.stringifyObject(response)}`);
             // Process the batch response
             response.data.forEach((txResult, idx) => {
                 const txHash = batch[idx];
@@ -47,9 +47,11 @@ async function getTransactionTimestamp(network, dstTxHashes) {
             batch.forEach(txHash => {
                 results[txHash] = { error: error.message };
             });
+            return null;
         }
     }
 
+    console.log(`getTransactionTimestamp blockNumber of txhashes results: ${util.stringifyObject(results)}`);
     // Get unique block numbers
     const blockNumbers = [...new Set(
         Object.values(results)
@@ -57,6 +59,7 @@ async function getTransactionTimestamp(network, dstTxHashes) {
             .map(r => r.blockNumber)
     )];
 
+    console.log(`getTransactionTimestamp blockNumbers: ${util.stringifyObject(blockNumbers)}`);
     // Get block timestamps using the batch function
     const blockTimestampMap = await getBatchBlockTimestamps(rpcUrl, blockNumbers);
 
@@ -67,7 +70,7 @@ async function getTransactionTimestamp(network, dstTxHashes) {
             return { 
                 txHash, 
                 timestamp: null, 
-                error: result?.error || 'Unknown error' 
+                error: result?.error || 'Unknown error'
             };
         }
         return {
@@ -80,3 +83,10 @@ async function getTransactionTimestamp(network, dstTxHashes) {
 }
 
 module.exports = { getTransactionTimestamp };
+
+(async ()=>{
+    const network="main";
+    const rpcUrl = config[network].dstChain.url;
+    let retGetTransactionTimestamp = await getTransactionTimestamp(rpcUrl, ["0x8588bb8413c03079550ffa25ce653a09bb237b08ce7ec832816df795fa023963"])
+    console.log(`retGetTransactionTimestamp: ${util.stringifyObject(retGetTransactionTimestamp)}`);
+})();
