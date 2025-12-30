@@ -4,60 +4,18 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const config = require('./config').config;
-const network = config.network;
-const kibanaConfig = require('./config').kibanaConfig;
-const util = require('./util/util');
-
-console.log(`network.....: ${network}`);
-console.log(`config.....: ${config}`);
-console.log(`kibanaConfig.....: ${kibanaConfig}`);
-
-
-
-const filename = `./result/logs_${network}_metrics.csv`;
+const getCommonLogs = require('../common/getLogs').getCommonLogs;
 
 async function getLogs(net, keywords, query_period, size) {
-  const url = 'http://log.wanchain.org:9200/_search?pretty';
-  const queryData = {
-    size: size,
-    sort: [{ "@timestamp": { "order": "desc" } }],
-    query: {
-      bool: {
-        must: [
-          { match_phrase: { "type": net } },
-        ],
-        filter: [{
-          range: {
-            "@timestamp": {
-              "gte": `now-${query_period}s`,
-              "lte": "now"
-            }
-          }
-        }]
-      }
+  const resultDir = path.join(__dirname, '../result');
+    if (!fs.existsSync(resultDir)) {
+      fs.mkdirSync(resultDir, { recursive: true });
     }
-  };
-
-  for (let keyword of keywords) {
-    queryData.query.bool.must.push({ match_phrase: { "message": keyword } });
-  }
-
-  console.log(`queryData: ${util.stringifyObject(queryData)}`);
+    const filename = path.join(resultDir, `logs_${net}_metrics.csv`);
   try {
-    const response = await axios.post(url, queryData, {
-      auth: {
-        username: kibanaConfig.usename,
-        password: kibanaConfig.password,
-      },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    const logs = response.data.hits.hits;
+    
+    const logs = await getCommonLogs(net, keywords, query_period, size);    
     const results = [];
-
     // Process each log entry
     for (const log of logs) {
       const message = log._source.message;
@@ -106,12 +64,4 @@ async function getLogs(net, keywords, query_period, size) {
     throw error;
   }
 }
-
-// Example usage
-
-console.log(`keywords: ${kibanaConfig}`);
-// getLogs(network, kibanaConfig.keywords[network].metrics, 86400, 1)
-//   .catch(console.error);
-
-getLogs('test', kibanaConfig.keywords['test'].metrics, 86400, 1)
-  .catch(console.error);
+module.exports = { scanMetrics: getLogs };

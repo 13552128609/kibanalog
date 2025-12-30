@@ -4,56 +4,18 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const config = require('./config').config;
-const network = config.network;
-const kibanaConfig = require('./config').kibanaConfig;
-
-console.log(`network.....: ${network}`);
-console.log(`config.....: ${config}`);
-console.log(`kibanaConfig.....: ${kibanaConfig}`);
-
-
-
-const filename=`./result/logs_${network}_dstChainTxHashes.csv`;
+const getCommonLogs = require('../common/getLogs').getCommonLogs;
 
 async function getLogs(net, keywords, query_period, size) {
-  const url = 'http://log.wanchain.org:9200/_search?pretty';
-  const queryData = {
-    size: size,
-    sort: [{ "@timestamp": { "order": "desc" } }],
-    query: {
-      bool: {
-        must: [          
-          { match_phrase: { "type": net } },          
-        ],
-        filter: [{
-          range: {
-            "@timestamp": {
-              "gte": `now-${query_period}s`,
-              "lte": "now"
-            }
-          }
-        }]
-      }
+  const resultDir = path.join(__dirname, '../result');
+    if (!fs.existsSync(resultDir)) {
+      fs.mkdirSync(resultDir, { recursive: true });
     }
-  };
-  
-  for(let keyword of keywords){
-      queryData.query.bool.must.push({ match_phrase: { "message": keyword } });
-  }
+    const filename = path.join(resultDir, `logs_${net}_dstChainTxHashes.csv`);  
 
   try {
-    const response = await axios.post(url, queryData, {
-      auth: {
-        username: kibanaConfig.usename,
-        password: kibanaConfig.password,
-      },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    const logs = response.data.hits.hits;
+    
+    const logs = await getCommonLogs(net, keywords, query_period, size);    
     const results = [];
 
     // Process each log entry
@@ -95,12 +57,4 @@ async function getLogs(net, keywords, query_period, size) {
     throw error;
   }
 }
-
-// Example usage
-
-/*getLogs(network, ["checkTransOnline checkHash", "0x8e8be38f61ec40c943fa49e8bd5e4235e5eb976b9d9f69aff2e90f59cbd48f93"], 86400, 1)
-  .catch(console.error);*/
-  
-  console.log(`keywords: ${kibanaConfig}`);
-getLogs(network, kibanaConfig.keywords[network].dstTxHashes, 86400, 1)
-  .catch(console.error);
+module.exports = { scanDstChainTxHashes: getLogs };
