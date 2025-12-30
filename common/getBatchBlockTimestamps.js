@@ -1,5 +1,6 @@
 const axios = require('axios');
 const util = require('../util/util');
+
 /**
  * Fetches timestamps for multiple blocks in batches
  * @param {string} rpcUrl - The RPC endpoint URL
@@ -20,14 +21,14 @@ async function getBatchBlockTimestamps(rpcUrl, blockNumbers, batchSize = 50) {
             params: [blockNumber, false],
             id: i + idx
         }));
-        console.log(`getBatchBlockTimestamps batchRequests: ${util.stringifyObject(batchRequests)}`);
+        console.log(`getBatchBlockTimestamps batchRequests: ${(batchRequests)}`);
         try {
             const response = await axios.post(rpcUrl, batchRequests, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log(`getBatchBlockTimestamps response: ${util.stringifyObject(response)}`);
+            console.log(`getBatchBlockTimestamps response: ${util.stringifyObject(response.data)}`);
             // Process block responses
             response.data.forEach((blockResult, idx) => {
                 const blockNumber = blockBatch[idx];
@@ -54,23 +55,6 @@ async function getBatchBlockTimestamps(rpcUrl, blockNumbers, batchSize = 50) {
 module.exports = {
     getBatchBlockTimestamps
 };
-
-const config = require('../cfg/config').config;
-const network = "main";
-const RPC_URL = config[network].srcChain.url;
-console.log(`RPC_URL: ${RPC_URL}`);
-
-// 测试：一次获取 5 个区块的时间戳
-async function test() {
-    //const blocksToFetch = [227814360, 227814361, 227814362, 227814363, 227814364];
-    const blocksToFetch = ['0x01', '0x02', '0x03', '0x04', '0x05'];
-    try {
-        const results = await getBatchBlockTimestamps(RPC_URL,blocksToFetch);
-        console.log('Results:', results);
-    } catch (error) {
-        console.error('Test failed:', error.message);
-    }
-}
 
 module.exports = {
     getBatchBlockTimestamps
