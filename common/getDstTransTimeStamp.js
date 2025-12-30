@@ -83,10 +83,3 @@ async function getTransactionTimestamp(rpcUrl, dstTxHashes,batchSize = 50) {
 }
 
 module.exports = { getTransactionTimestamp };
-
-(async ()=>{
-    const network="main";
-    const rpcUrl = config[network].dstChain.url;
-    let retGetTransactionTimestamp = await getTransactionTimestamp(rpcUrl, ["0x8588bb8413c03079550ffa25ce653a09bb237b08ce7ec832816df795fa023963"])
-    console.log(`retGetTransactionTimestamp: ${util.stringifyObject(retGetTransactionTimestamp)}`);
-})();

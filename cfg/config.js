@@ -9,19 +9,20 @@ const  config = {
   "network":"main",  
   "main": {
     "srcChain":{
-      "url": `https://arbitrum-mainnet.infura.io/v3/${apiKey}`,
+      "url": `https://arbitrum-mainnet.infura.io/v3/${apiKey}`, // arb
     },
     "dstChain":{
-      "url": `https://optimism.infura.io/v3/${apiKey}`,
+        //"url": `https://optimism.infura.io/v3/${apiKey}`, // opt
+        "url": `https://gwan-ssl.wandevs.org:56891`, // wanchain`, // wanchain
     }    
   },
   "test": {
     "srcChain":{
-      "url": `https://arbitrum-sepolia.infura.io/v3/${apiKey}`,
+      "url": `https://arbitrum-sepolia.infura.io/v3/${apiKey}`, // arb
     },
     "dstChain":{
-      "url": `https://optimism-sepolia.infura.io/v3/${apiKey}`,
-      //"url": `http://gwan-testnet.wandevs.org:36891`,
+      //"url": `https://optimism-sepolia.infura.io/v3/${apiKey}`, // opt      
+      "url": `http://gwan-testnet.wandevs.org:36891`, // wanchain
     }
   }
 }

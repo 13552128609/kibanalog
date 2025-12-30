@@ -72,10 +72,6 @@ async function test() {
     }
 }
 
-// 取消下面的注释以运行测试
-
-//test();
-
 module.exports = {
     getBatchBlockTimestamps
 };
