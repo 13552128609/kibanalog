@@ -5,7 +5,7 @@ dstChain: wanchain
 */
 
 const apiKey = "6d2ab3e9ef104bb58df101a3c4509469";
-const  config = {
+var  config = {
   "network":"main",  
   "main": {
     "srcChain":{
