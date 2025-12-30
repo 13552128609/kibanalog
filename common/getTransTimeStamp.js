@@ -1,19 +1,18 @@
 const axios = require('axios');
 const { getBatchBlockTimestamps } = require('./getBatchBlockTimestamps');
-const config = require('../cfg/config').config;
 const util = require('../util/util');
-async function getTransactionTimestamp(rpcUrl, dstTxHashes,batchSize = 50) {
+async function getTransactionTimestamp(rpcUrl, txHashes,batchSize = 50) {
     console.log(`getTransactionTimestamp rpcUrl: ${util.stringifyObject(rpcUrl)}`);
-    console.log(`getTransactionTimestamp dstTxHashes: ${util.stringifyObject(dstTxHashes)}`);
-    if (!dstTxHashes || !dstTxHashes.length) {
+    console.log(`getTransactionTimestamp txHashes: ${util.stringifyObject(txHashes)}`);
+    if (!txHashes || !txHashes.length) {
         return [];
     }
     
     const results = {};
 
     // Process transaction hashes in batches
-    for (let i = 0; i < dstTxHashes.length; i += batchSize) {
-        const batch = dstTxHashes.slice(i, i + batchSize);
+    for (let i = 0; i < txHashes.length; i += batchSize) {
+        const batch = txHashes.slice(i, i + batchSize);
         const batchRequests = batch.map((txHash, index) => ({
             jsonrpc: "2.0",
             method: "eth_getTransactionByHash",
@@ -64,7 +63,7 @@ async function getTransactionTimestamp(rpcUrl, dstTxHashes,batchSize = 50) {
     const blockTimestampMap = await getBatchBlockTimestamps(rpcUrl, blockNumbers);
 
     // Combine the results
-    return dstTxHashes.map(txHash => {
+    return txHashes.map(txHash => {
         const result = results[txHash];
         if (!result || result.error) {
             return { 
