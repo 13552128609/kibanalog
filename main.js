@@ -9,6 +9,7 @@ const path = require('path');
 const config = require('./cfg/config').config;
 const kibanaConfig = require('./cfg/config').kibanaConfig;
 const { formatDateTime } = require('./util/util');
+const { scanMetrics } = require('./bin/scanMetrics');
 
 // Update the command line argument parsing
 program
@@ -93,6 +94,12 @@ async function main() {
     fs.writeFileSync(outputFile, csvContent);
 
     console.log(`Transaction data saved to: ${outputFile}`);
+
+
+    // 3. Get metrics
+    console.log('Fetching metrics...');
+    await scanMetrics(config.network, kibanaConfig.keywords[config.network].metrics, 3600, 3600);
+
 
   } catch (error) {
     console.error('Error in main process:', error);
