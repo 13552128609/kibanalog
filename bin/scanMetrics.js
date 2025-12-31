@@ -12,7 +12,7 @@ async function getLogs(net, keywords, query_period, size) {
     if (!fs.existsSync(resultDir)) {
       fs.mkdirSync(resultDir, { recursive: true });
     }
-    const filename = path.join(resultDir, `logs_${net}_metrics_${formatDateTime()}.csv`);
+    const filename = path.join(resultDir, `metrics_${net}_${formatDateTime()}.csv`);
   try {
     
     const logs = await getCommonLogs(net, keywords, query_period, size);    

@@ -12,11 +12,11 @@ async function getLogs(net, keywords, query_period, size) {
     if (!fs.existsSync(resultDir)) {
       fs.mkdirSync(resultDir, { recursive: true });
     }
-    const filename = path.join(resultDir, `logs_${net}_dstChainTxHashes_${formatDateTime()}.csv`);  
+    const filename = path.join(resultDir, `dstChainTxHashes_${net}_${formatDateTime()}.csv`);  
 
   try {
     
-    const logs = await getCommonLogs(net, keywords, query_period, size);    
+    const logs = await getCommonLogs(net, keywords, query_period, size);
     const results = [];
 
     // Process each log entry

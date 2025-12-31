@@ -86,7 +86,8 @@ async function main() {
     const outputFile = path.join(resultDir, `crosschain_detail_${config.network}_${formatDateTime()}.csv`);
     const csvRows = Object.values(combinedData).map(tx => {
       const csvFields = Object.keys(tx).map(key => `"${tx[key]}"`).join(',');
-      return csvFields;
+      const cleanMessage = csvFields.replace(/\n/g, ' ').replace(/"/g, "'");
+      return cleanMessage;
     }).join('\n');
 
     const csvHeader = Object.keys(combinedData[0]).join(',') + '\n';
