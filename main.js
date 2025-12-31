@@ -42,10 +42,10 @@ async function main() {
 
     const originTxs = mpcResults.map(tx => tx.originTx).filter(tx => tx !== 'N/A');
     console.log(`Found ${originTxs.length} valid origin transactions`);
-    
+
     // 2.2 Get origin transaction timestamps
     console.log('Fetching origin transaction timestamps...');
-    let network=config.network
+    let network = config.network
     const originTxWithTimestamps = await getTransactionTimestamps(
       config[network].srcChain.url,
       originTxs
@@ -83,7 +83,7 @@ async function main() {
     }
     const outputFile = path.join(resultDir, `transactions_${config.network}_${Date.now()}.json`);
     fs.writeFileSync(outputFile, JSON.stringify(combinedData, null, 2));
-    
+
     console.log(`Transaction data saved to: ${outputFile}`);
 
   } catch (error) {
@@ -97,15 +97,15 @@ async function getTransactionTimestamps(rpcUrl, txHashes, batchSize = 50) {
   const results = {};
   for (let i = 0; i < txHashes.length; i += batchSize) {
     const batch = txHashes.slice(i, i + batchSize);
-    const timestamps = await getTransactionTimestamp(rpcUrl, batch,batchSize);
-    
+    const timestamps = await getTransactionTimestamp(rpcUrl, batch, batchSize);
+
     // Map timestamps to their transaction hashes
     timestamps.forEach((tx, index) => {
       if (tx && tx.txHash) {
         results[tx.txHash] = tx.timestamp;
       }
     });
-    
+
     // Add a small delay between batches to avoid rate limiting
     if (i + batchSize < txHashes.length) {
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -117,7 +117,7 @@ async function getTransactionTimestamps(rpcUrl, txHashes, batchSize = 50) {
 // Helper function to combine all transaction data
 function combineTransactionData(mpcResults, originTimestamps, dstTxHashes, dstTimestamps) {
   const result = {};
-  
+
   // Create a map of originTx to dstTxHash
   const originToDstMap = {};
   dstTxHashes.forEach(tx => {
@@ -130,15 +130,57 @@ function combineTransactionData(mpcResults, originTimestamps, dstTxHashes, dstTi
   mpcResults.forEach(tx => {
     if (tx.originTx && tx.originTx !== 'N/A') {
       const dstTxHash = originToDstMap[tx.originTx] || 'N/A';
-      
+
+      // Convert timestamp to seconds if it's a valid date string
+      let txTimestamp = 'N/A';
+      if (tx.timestamp) {
+        try {
+          txTimestamp = Math.floor(new Date(tx.timestamp).getTime() / 1000).toString();
+        } catch (e) {
+          console.warn(`Invalid timestamp for tx ${tx.originTx}: ${tx.timestamp}`);
+        }
+      }
+      // TS means timestamp in seconds
       result[tx.originTx] = {
         originTx: tx.originTx,
-        originBlock: tx.originBlock,
-        originTimestamp: originTimestamps[tx.originTx] || 'N/A',
         dstTxHash: dstTxHash,
-        dstTimestamp: dstTxHash !== 'N/A' ? (dstTimestamps[dstTxHash] || 'N/A') : 'N/A',
-        during: tx.during,
-        duringAct: tx.duringAct,
+        crossStartTS: originTimestamps[tx.originTx] || 'N/A',
+        crossEndTS: dstTxHash !== 'N/A' ? (dstTimestamps[dstTxHash] || 'N/A') : 'N/A',
+
+        // 整个跨链时长
+        crossDuring: (() => {
+          const originTs = originTimestamps[tx.originTx];
+          const dstTs = dstTxHash !== 'N/A' ? dstTimestamps[dstTxHash] : null;
+          return originTs && originTs !== 'N/A' && dstTs && dstTs !== 'N/A'
+            ? Math.round(parseInt(dstTs) - parseInt(originTs)).toString()
+            : 'N/A';
+        })(),
+        MpcRecieveTS: txTimestamp !== 'N/A' && tx.during !== 'N/A'
+          ? Math.round(parseInt(txTimestamp) - parseFloat(tx.during)).toString()
+          : 'N/A',
+        MpcReturnTS: txTimestamp,  // Add the timestamp from mpcResults (in seconds)        
+
+        // mpc签名时长（包括等待approve时长）
+        MpcSignDuring: tx.during,
+        
+        // mpc净签名时长
+        MpcSignDuringAct: tx.duringAct,
+
+        // 凑够theshold个approve的时长
+        AgentApproveDuring: tx.during !== 'N/A' && tx.duringAct !== 'N/A'
+          ? Math.round(parseInt(tx.during) - parseFloat(tx.duringAct)).toString()
+          : 'N/A',
+
+        // Agent请求签名时长 (从原链lock到发起mpc签名)
+        AgentReqSignDuring: (() => {
+          const crossStart = originTimestamps[tx.originTx];
+          const mpcRecieve = txTimestamp !== 'N/A' && tx.during !== 'N/A'
+            ? Math.round(parseInt(txTimestamp) - parseFloat(tx.during))
+            : null;
+          return crossStart && crossStart !== 'N/A' && mpcRecieve
+            ? Math.max(0, parseInt(mpcRecieve) - parseInt(crossStart)).toString()
+            : 'N/A';
+        })(),
         rawMessage: tx.rawMessage
       };
     }

@@ -34,7 +34,7 @@ async function getBatchBlockTimestamps(rpcUrl, blockNumbers, batchSize = 50) {
                 const blockNumber = blockBatch[idx];
                 if (blockResult.result) {
                     blockTimestampMap[blockNumber] = 
-                        parseInt(blockResult.result.timestamp, 16) * 1000;
+                        parseInt(blockResult.result.timestamp, 16);
                 } else {
                     console.warn(`No result for block: ${blockNumber}`);
                     blockTimestampMap[blockNumber] = null;
