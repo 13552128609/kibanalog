@@ -5,13 +5,14 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const getCommonLogs = require('../common/getLogs').getCommonLogs;
+const formatDateTime = require('../util/util').formatDateTime;
 
 async function getLogs(net, keywords, query_period, size) {
   const resultDir = path.join(__dirname, '../result');
     if (!fs.existsSync(resultDir)) {
       fs.mkdirSync(resultDir, { recursive: true });
     }
-    const filename = path.join(resultDir, `logs_${net}_dstChainTxHashes.csv`);  
+    const filename = path.join(resultDir, `logs_${net}_dstChainTxHashes_${formatDateTime()}.csv`);  
 
   try {
     

@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const config = require('./cfg/config').config;
 const kibanaConfig = require('./cfg/config').kibanaConfig;
+const { formatDateTime } = require('./util/util');
 
 // Update the command line argument parsing
 program
@@ -81,8 +82,15 @@ async function main() {
     if (!fs.existsSync(resultDir)) {
       fs.mkdirSync(resultDir, { recursive: true });
     }
-    const outputFile = path.join(resultDir, `transactions_${config.network}_${Date.now()}.json`);
-    fs.writeFileSync(outputFile, JSON.stringify(combinedData, null, 2));
+    const outputFile = path.join(resultDir, `crosschain_detail_${config.network}_${formatDateTime()}.csv`);
+    const csvRows = Object.values(combinedData).map(tx => {
+      const csvFields = Object.keys(tx).map(key => `"${tx[key]}"`).join(',');
+      return csvFields;
+    }).join('\n');
+
+    const csvHeader = Object.keys(combinedData[0]).join(',') + '\n';
+    const csvContent = csvHeader + csvRows;
+    fs.writeFileSync(outputFile, csvContent);
 
     console.log(`Transaction data saved to: ${outputFile}`);
 
@@ -179,6 +187,13 @@ function combineTransactionData(mpcResults, originTimestamps, dstTxHashes, dstTi
             : null;
           return crossStart && crossStart !== 'N/A' && mpcRecieve
             ? Math.max(0, parseInt(mpcRecieve) - parseInt(crossStart)).toString()
+            : 'N/A';
+        })(),
+        // Agent mint时长 (从mpc返回签名到目标链完成mint)
+        AgentMintDuring: (() => {
+          const crossEnd = dstTxHash !== 'N/A' ? dstTimestamps[dstTxHash] : null;
+          return crossEnd && crossEnd !== 'N/A' && txTimestamp && txTimestamp !== 'N/A'
+            ? Math.max(0, parseInt(crossEnd) - parseInt(txTimestamp)).toString()
             : 'N/A';
         })(),
         rawMessage: tx.rawMessage

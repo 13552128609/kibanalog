@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../cfg/config')
 const getCommonLogs = require('../common/getLogs').getCommonLogs;
+const formatDateTime = require('../util/util').formatDateTime;
 
 // Helper function to parse duration strings like "1m2s" to seconds
 
@@ -35,7 +36,7 @@ async function getLogs(net, keywords, query_period, size) {
   if (!fs.existsSync(resultDir)) {
     fs.mkdirSync(resultDir, { recursive: true });
   }
-  const filename = path.join(resultDir, `logs_${net}_mpcsuccess.csv`);
+  const filename = path.join(resultDir, `logs_${net}_mpcsuccess_${formatDateTime()}.csv`);
 
 
   console.log(`net: ${net}`);
