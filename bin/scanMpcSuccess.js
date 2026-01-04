@@ -30,7 +30,7 @@ function parseDuration(durationStr) {
   return '0.000000';
 }
 
-async function getLogs(net, keywords, query_period, size) {
+async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
 
   const resultDir = path.join(__dirname, '../result');
   if (!fs.existsSync(resultDir)) {
@@ -41,10 +41,11 @@ async function getLogs(net, keywords, query_period, size) {
 
   console.log(`net: ${net}`);
   console.log(`keywords: ${keywords}`);
-  console.log(`query_period: ${query_period}`);
+  console.log(`fromDateTime: ${fromDateTime}`);
+  console.log(`toDateTime: ${toDateTime}`);
   console.log(`size: ${size}`);
   try {
-    const logs = await getCommonLogs(net, keywords, query_period, size);
+    const logs = await getCommonLogs(net, keywords, fromDateTime,toDateTime, size);
     const results = [];
     // Process each log entry
     for (const log of logs) {

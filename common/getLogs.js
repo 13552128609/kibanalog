@@ -3,7 +3,7 @@ const kibanaConfig = require('../cfg/config').kibanaConfig;
 const axios = require('axios');
 const util = require('../util/util');
 
-async function getCommonLogs(net, keywords, query_period, size) {
+async function getCommonLogs(net, keywords, formatDateTime,toDateTime, size) {
   const url = 'http://log.wanchain.org:9200/_search?pretty';
   const queryData = {
     size: size,
@@ -16,8 +16,8 @@ async function getCommonLogs(net, keywords, query_period, size) {
         filter: [{
           range: {
             "@timestamp": {
-              "gte": `now-${query_period}s`,
-              "lte": "now"
+              "gte": `${formatDateTime}`,
+              "lte": `${toDateTime}`
             }
           }
         }]

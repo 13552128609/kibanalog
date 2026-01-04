@@ -7,7 +7,7 @@ const path = require('path');
 const getCommonLogs = require('../common/getLogs').getCommonLogs;
 const formatDateTime = require('../util/util').formatDateTime;
 
-async function getLogs(net, keywords, query_period, size) {
+async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
   const resultDir = path.join(__dirname, '../result');
     if (!fs.existsSync(resultDir)) {
       fs.mkdirSync(resultDir, { recursive: true });
@@ -16,7 +16,7 @@ async function getLogs(net, keywords, query_period, size) {
 
   try {
     
-    const logs = await getCommonLogs(net, keywords, query_period, size);
+    const logs = await getCommonLogs(net, keywords, fromDateTime, toDateTime, size);
     const results = [];
 
     // Process each log entry

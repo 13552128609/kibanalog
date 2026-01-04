@@ -10,10 +10,13 @@ const config = require('./cfg/config').config;
 const kibanaConfig = require('./cfg/config').kibanaConfig;
 const { formatDateTime } = require('./util/util');
 const { scanMetrics } = require('./bin/scanMetrics');
+const MAX_SIZE = 10000;
 
 // Update the command line argument parsing
 program
   .option('-n, --network <type>', 'Network type (main or test)', 'test')
+  .option('-f, --fromDateTime <type>', 'From date and time (YYYY-MM-DDTHH:mm:ssZ)', '2025-12-30T00:00:00Z')
+  .option('-t, --toDateTime <type>', 'To date and time (YYYY-MM-DDTHH:mm:ssZ)', '2025-12-31T23:59:59Z')
   .parse(process.argv);
 
 // Get the network value correctly
@@ -24,6 +27,9 @@ console.log(`Using network: ${config.network}`);
 console.log(`config:`, config);  // Log the entire config object for debugging
 // The network configuration is directly under config[network], not config[config.network]
 
+console.log(`options:`, options);  // Log the entire options object for debugging
+const fromDateTime = options.fromDateTime;
+const toDateTime = options.toDateTime;
 
 // Main function
 async function main() {
@@ -33,8 +39,9 @@ async function main() {
     const mpcResults = await scanMpcSuccess(
       config.network,
       kibanaConfig.keywords[config.network].successMpc,
-      86400, // 24 hours
-      100    // Limit to 100 results
+      fromDateTime,
+      toDateTime,
+      MAX_SIZE
     );
 
     if (!mpcResults || mpcResults.length === 0) {
@@ -58,8 +65,9 @@ async function main() {
     const dstTxHashes = await scanDstChainTxHashes(
       config.network,
       kibanaConfig.keywords[config.network].dstTxHashes,
-      86400, // 24 hours
-      100    // Limit to 100 results
+      fromDateTime,
+      toDateTime,
+      MAX_SIZE
     );
 
     // 2.4 Get destination transaction timestamps
@@ -100,7 +108,7 @@ async function main() {
 
     // 3. Get metrics
     console.log('Fetching metrics...');
-    await scanMetrics(config.network, kibanaConfig.keywords[config.network].metrics, 3600, 3600);
+    await scanMetrics(config.network, kibanaConfig.keywords[config.network].metrics, fromDateTime,toDateTime, MAX_SIZE);
 
 
   } catch (error) {
@@ -216,4 +224,4 @@ function combineTransactionData(mpcResults, originTimestamps, dstTxHashes, dstTi
 // Run the main function
 main();
 
-//node main.js -n test
+//node main.js -n test -f "2025-12-30T00:00:00Z" -t "2025-12-31T23:59:59Z"
