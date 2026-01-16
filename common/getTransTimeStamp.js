@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { getBatchBlockTimestamps } = require('./getBatchBlockTimestamps');
 const util = require('../util/util');
+
 async function getTransactionTimestamp(rpcUrl, txHashes,batchSize = 50) {
     console.log(`getTransactionTimestamp rpcUrl: ${util.stringifyObject(rpcUrl)}`);
     console.log(`getTransactionTimestamp txHashes: ${util.stringifyObject(txHashes)}`);
@@ -49,6 +50,8 @@ async function getTransactionTimestamp(rpcUrl, txHashes,batchSize = 50) {
             return null;
         }
     }
+
+    await util.sleep(2000);
 
     console.log(`getTransactionTimestamp blockNumber of txhashes results: ${util.stringifyObject(results)}`);
     // Get unique block numbers

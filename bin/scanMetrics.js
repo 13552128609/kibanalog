@@ -58,7 +58,7 @@ async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
     fs.writeFileSync(filename, csvContent);
 
     console.log(`Found ${logs.length} logs. Data saved to ${filename}`);
-    return results;
+    return filename; // Return the filename instead of results
 
   } catch (error) {
     console.error('Error:', error.response ? error.response.data : error.message);

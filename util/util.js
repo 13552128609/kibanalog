@@ -107,8 +107,13 @@ function formatDateTime(date = new Date()) {
   return `${year}-${month}-${day}_${hour}`;
 }
 
+async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 module.exports = {
     stringifyObject,
     makeRequestWithRetry,
     formatDateTime,
+    sleep,
 };

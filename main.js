@@ -11,6 +11,7 @@ const kibanaConfig = require('./cfg/config').kibanaConfig;
 const { formatDateTime, stringifyObject } = require('./util/util');
 const { scanMetrics } = require('./bin/scanMetrics');
 const MAX_SIZE = 10000;
+const util = require('./util/util');
 
 // Update the command line argument parsing
 program
@@ -146,7 +147,7 @@ async function main() {
 }
 
 // Helper function to get transaction timestamps in batches
-async function getTransactionTimestamps(rpcUrl, txHashes, batchSize = 50) {
+async function getTransactionTimestamps(rpcUrl, txHashes, batchSize = 20) {
   const results = {};
   for (let i = 0; i < txHashes.length; i += batchSize) {
     const batch = txHashes.slice(i, i + batchSize);
@@ -161,7 +162,7 @@ async function getTransactionTimestamps(rpcUrl, txHashes, batchSize = 50) {
 
     // Add a small delay between batches to avoid rate limiting
     if (i + batchSize < txHashes.length) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await util.sleep(2000);
     }
   }
   return results;

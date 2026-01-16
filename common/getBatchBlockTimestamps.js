@@ -8,7 +8,7 @@ const util = require('../util/util');
  * @param {number} [batchSize=50] - Number of blocks to fetch in each batch
  * @returns {Promise<Object>} Object mapping block numbers to timestamps
  */
-async function getBatchBlockTimestamps(rpcUrl, blockNumbers, batchSize = 50) {
+async function getBatchBlockTimestamps(rpcUrl, blockNumbers, batchSize = 20) {
     console.log(`getBatchBlockTimestamps blockNumbers: ${util.stringifyObject(blockNumbers)}`);
     console.log(`getBatchBlockTimestamps rpcUrl: ${util.stringifyObject(rpcUrl)}`);
     const blockTimestampMap = {};
@@ -47,14 +47,11 @@ async function getBatchBlockTimestamps(rpcUrl, blockNumbers, batchSize = 50) {
                 blockTimestampMap[blockNumber] = null;
             });
         }
+        await util.sleep(2000);
     }
 
     return blockTimestampMap;
 }
-
-module.exports = {
-    getBatchBlockTimestamps
-};
 
 module.exports = {
     getBatchBlockTimestamps

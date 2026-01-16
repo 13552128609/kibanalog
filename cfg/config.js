@@ -18,7 +18,8 @@ var  config = {
   },
   "test": {
     "srcChain":{
-      "url": `https://arbitrum-sepolia.infura.io/v3/${apiKey}`, // arb
+      //"url": `https://arbitrum-sepolia.infura.io/v3/${apiKey}`, // arb
+      "url": `https://arbitrum-sepolia-rpc.publicnode.com`, // arb
     },
     "dstChain":{
       //"url": `https://optimism-sepolia.infura.io/v3/${apiKey}`, // opt
