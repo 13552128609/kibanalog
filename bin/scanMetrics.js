@@ -22,7 +22,7 @@ async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
       const message = log._source.message;
       const timestamp = log._source['@timestamp'];
       // Extract fields using regex 
-      console.log('Raw message:', message);  // Add this before the metrics extraction           
+      // console.log('Raw message:', message);  // Add this before the metrics extraction           
       const metrics = {
         cpu_usage: message.match(/cpu_usage=([\d.]+)%/)?.[1] || 'N/A',
         cpu_cores: message.match(/cpu_cores=(\d+)/)?.[1] || 'N/A',
@@ -34,7 +34,7 @@ async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
         disk_usage: message.match(/disk_usage=(\d+%)/)?.[1] || 'N/A',
         load_avg: message.match(/load_avg=([\d.]+)/)?.[1] || 'N/A'
       };
-      console.log('Extracted metrics:', JSON.stringify(metrics, null, 2));  // Add this after
+      //console.log('Extracted metrics:', JSON.stringify(metrics, null, 2));  // Add this after
 
       results.push({
         timestamp,

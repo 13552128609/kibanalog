@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const config = require('./cfg/config').config;
 const kibanaConfig = require('./cfg/config').kibanaConfig;
-const { formatDateTime } = require('./util/util');
+const { formatDateTime, stringifyObject } = require('./util/util');
 const { scanMetrics } = require('./bin/scanMetrics');
 const MAX_SIZE = 10000;
 
@@ -37,7 +37,8 @@ async function main() {
     // 2.1 Get OriginTx list using scanMpcSuccess
     console.log('Fetching MPC success transactions...');
     const mpcResults = await scanMpcSuccess(
-      config.network,
+      //config.network,//todo should change
+      'debug',
       kibanaConfig.keywords[config.network].successMpc,
       fromDateTime,
       toDateTime,
@@ -49,6 +50,7 @@ async function main() {
       return;
     }
 
+    console.log('MPC Results:', stringifyObject(mpcResults, { indent: 2 }));
     const originTxs = mpcResults.map(tx => tx.originTx).filter(tx => tx !== 'N/A');
     console.log(`Found ${originTxs.length} valid origin transactions`);
 
@@ -63,7 +65,8 @@ async function main() {
     // 2.3 Get destination transaction hashes
     console.log('Fetching destination transaction hashes...');
     const dstTxHashes = await scanDstChainTxHashes(
-      config.network,
+      //config.network,
+      'debug',
       kibanaConfig.keywords[config.network].dstTxHashes,
       fromDateTime,
       toDateTime,
@@ -102,14 +105,39 @@ async function main() {
     const csvHeader = Object.keys(combinedData[0]).join(',') + '\n';
     const csvContent = csvHeader + csvRows;
     fs.writeFileSync(outputFile, csvContent);
-
     console.log(`Transaction data saved to: ${outputFile}`);
 
+    // Run analysis on the generated CSV file
+    console.log('Running cross-chain analysis...');
+    try {
+      const { execSync } = require('child_process');
+      
+      // Run cross-chain analysis
+      console.log('Executing cross-chain analysis...');
+      execSync(`node ${path.join(__dirname, 'analysis_cross.js')} -f "${outputFile}"`, { stdio: 'inherit' });
+      
+      console.log('Cross-chain analysis completed successfully');
+    } catch (error) {
+      console.error('Error running cross-chain analysis:', error.message);
+    }
 
     // 3. Get metrics
     console.log('Fetching metrics...');
-    await scanMetrics(config.network, kibanaConfig.keywords[config.network].metrics, fromDateTime,toDateTime, MAX_SIZE);
+    const metricsFile = await scanMetrics(config.network, kibanaConfig.keywords[config.network].metrics, fromDateTime, toDateTime, MAX_SIZE);
+    
+    // Run metrics analysis if metrics file was created
+    if (metricsFile && fs.existsSync(metricsFile)) {
+      console.log('Running metrics analysis...');
+      try {
+        const { execSync } = require('child_process');
+        execSync(`node ${path.join(__dirname, 'analysis_metric.js')} -f "${metricsFile}"`, { stdio: 'inherit' });
+        console.log('Metrics analysis completed successfully');
+      } catch (error) {
+        console.error('Error running metrics analysis:', error.message);
+      }
+    }
 
+    
 
   } catch (error) {
     console.error('Error in main process:', error);
@@ -224,4 +252,5 @@ function combineTransactionData(mpcResults, originTimestamps, dstTxHashes, dstTi
 // Run the main function
 main();
 
-//node main.js -n test -f "2025-12-30T00:00:00Z" -t "2025-12-31T23:59:59Z"
+//node main.js -n test -f "2026-01-05T00:00:00Z" -t "2026-01-05T23:59:59Z"
+//node main.js -n test -f "2026-01-16T07:00:00Z" -t "2026-01-16T08:00:59Z"
