@@ -8,7 +8,7 @@ const getCommonLogs = require('../common/getLogs').getCommonLogs;
 const formatDateTime = require('../util/util').formatDateTime;
 
 async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
-  const resultDir = path.join(__dirname, '../result');
+  const resultDir = path.join(__dirname, `../result/${formatDateTime()}`);
     if (!fs.existsSync(resultDir)) {
       fs.mkdirSync(resultDir, { recursive: true });
     }

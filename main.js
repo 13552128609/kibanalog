@@ -91,7 +91,7 @@ async function main() {
     );
 
     // Write results to file
-    const resultDir = path.join(__dirname, 'result');
+    const resultDir = path.join(__dirname, `result/${formatDateTime()}`);
     if (!fs.existsSync(resultDir)) {
       fs.mkdirSync(resultDir, { recursive: true });
     }

@@ -1,0 +1,43 @@
+=== Collection Analysis Report ===
+
+1. Self Collections:
+Hex		Binary				Ones Count
+--------------------------------------------------
+0x01fe7fff	00000001111111100111111111111111	23
+
+2. Peer Collections:
+Hex		Binary				Ones Count
+--------------------------------------------------
+0x017fdfff	00000001011111111101111111111111	23
+0x01beffff	00000001101111101111111111111111	23
+0x01fe7fff	00000001111111100111111111111111	23
+0x01fedfff	00000001111111101101111111111111	23
+0x01feff7f	00000001111111101111111101111111	23
+0x01ff7eff	00000001111111110111111011111111	23
+0x01ff7f7f	00000001111111110111111101111111	23
+0x01ff7fdf	00000001111111110111111111011111	23
+0x01ff7fef	00000001111111110111111111101111	23
+0xff7fff  	00000000111111110111111111111111	23
+
+3. Received Collections:
+Hex		Binary				Ones Count
+--------------------------------------------------
+
+4. Bitwise AND Analysis (Self & Peer):
+Peer Collection		AND Result		1s Count
+--------------------------------------------------
+0x017fdfff      	0x017e5fff      	21
+0x01beffff      	0x01be7fff      	22
+0x01fe7fff      	0x01fe7fff      	23
+0x01fedfff      	0x01fe5fff      	22
+0x01feff7f      	0x01fe7f7f      	22
+0x01ff7eff      	0x01fe7eff      	22
+0x01ff7f7f      	0x01fe7f7f      	22
+0x01ff7fdf      	0x01fe7fdf      	22
+0x01ff7fef      	0x01fe7fef      	22
+0xff7fff        	0x00fe7fff      	22
+
+=== Summary ===
+Total Self Collections: 1
+Total Peer Collections: 10
+Total Received Collections: 0
