@@ -29,7 +29,7 @@ async function getCommonLogs(net, keywords, formatDateTime,toDateTime, size) {
     queryData.query.bool.must.push({ match_phrase: { "message": keyword } });
   }
 
-  console.log(`queryData: ${util.stringifyObject(queryData)}`);
+  //console.log(`getCommonLogs queryData: ${util.stringifyObject(queryData)}`);
   try {
     const response = await axios.post(url, queryData, {
       auth: {

@@ -3,7 +3,7 @@
 const { program } = require('commander');
 const { scanMpcSuccess } = require('./bin/scanMpcSuccess');
 const { scanDstChainTxHashes } = require('./bin/scanDstChainTxHashes');
-const { getTransactionTimestamp } = require('./common/getTransTimeStamp');
+const { getTransactionTimestamp, getTransactionTimestampsFromInfoByBock: fetchTimestampsByBlock, getTransactionTimestampsFromInfoTxHash: fetchTimestampsByDstTxHash } = require('./common/getTransTimeStamp');
 const fs = require('fs');
 const path = require('path');
 const config = require('./cfg/config').config;
@@ -51,35 +51,66 @@ async function main() {
       return;
     }
 
-    console.log('MPC Results:', stringifyObject(mpcResults, { indent: 2 }));
-    const originTxs = mpcResults.map(tx => tx.originTx).filter(tx => tx !== 'N/A');
-    console.log(`Found ${originTxs.length} valid origin transactions`);
+    console.log(`MPC Results(len:${mpcResults.length}):`);
+    const originTxInfos = mpcResults
+      .map(tx => ({
+        originTx: tx.originTx,
+        chainType: tx.chainType,
+        originChain: tx.originChain,
+        originBlock:tx.originBlock
+      }))
+      .filter(tx => tx.originTx !== 'N/A');
+    //const originTxs = originTxInfos.map(tx => tx.originTx);
+    console.log(`Found ${originTxInfos.length} valid origin transactions\n\n`);
 
     // 2.2 Get origin transaction timestamps
+    // 使用orginTxInfos中的originBlock来获取交易的timestamps.
     console.log('Fetching origin transaction timestamps...');
     let network = config.network
-    const originTxWithTimestamps = await getTransactionTimestamps(
-      config[network].srcChain.url,
-      originTxs
+    const originTxWithTimestamps = await getTransactionTimestampsFromInfoByBock(
+      network,
+      originTxInfos
     );
+    console.log(`originTxWithTimestamps================================: ${stringifyObject(originTxWithTimestamps, { indent: 2 })}`);
 
     // 2.3 Get destination transaction hashes
     console.log('Fetching destination transaction hashes...');
     const dstTxHashes = await scanDstChainTxHashes(
-      //config.network,
-      'debug',
+      config.network,
+      //'debug',
       kibanaConfig.keywords[config.network].dstTxHashes,
       fromDateTime,
       toDateTime,
       MAX_SIZE
     );
+    
+    //console.log(`dstTxHashes================================: ${stringifyObject(dstTxHashes, { indent: 2 })}`);
+    //process.exit(0)
 
+    const originToDstMap = {};
+    dstTxHashes.forEach(tx => {
+      if (tx && tx.originTx && tx.dstTxHash && tx.dstTxHash !== 'N/A') {
+        originToDstMap[tx.originTx] = tx.dstTxHash;
+      }
+    });
+
+    const originTxInfosWithDstTxHash = originTxInfos.map(txInfo => ({
+      ...txInfo,
+      dstTxHash: originToDstMap[txInfo.originTx] || 'N/A'
+    }));
+
+    console.log(`originTxInfosWithDstTxHash================================: ${stringifyObject(originTxInfosWithDstTxHash, { indent: 2 })}`);
+    
     // 2.4 Get destination transaction timestamps
+    // 根据originTxInfosWithDstTxHash中的dstTxHash和chainType来获取交易的timestamps.
+    // 因为没有dst的blockNumber,所有首先获取dstTxHash的dstBlockNumber,然后批量通过blockNumber来获取dstHash的timestamp.
     console.log('Fetching destination transaction timestamps...');
-    const dstTxWithTimestamps = await getTransactionTimestamps(
-      config[config.network].dstChain.url,
-      dstTxHashes.map(tx => tx.dstTxHash).filter(hash => hash !== 'N/A')
+    const dstTxWithTimestamps = await getTransactionTimestampsFromInfoTxHash(
+      network,
+      originTxInfosWithDstTxHash,
     );
+
+    console.log(`dstTxWithTimestamps=${stringifyObject(dstTxWithTimestamps,{indent:2})}`);
 
     // 2.5 Combine all data
     console.log('Combining transaction data...');
@@ -162,6 +193,52 @@ async function getTransactionTimestamps(rpcUrl, txHashes, batchSize = 20) {
 
     // Add a small delay between batches to avoid rate limiting
     if (i + batchSize < txHashes.length) {
+      await util.sleep(2000);
+    }
+  }
+  return results;
+}
+
+
+// Helper function to get transaction timestamps in batches
+async function getTransactionTimestampsFromInfoByBock(network, txInfos, batchSize = 20) {
+  const results = {};
+  for (let i = 0; i < txInfos.length; i += batchSize) {
+    const batch = txInfos.slice(i, i + batchSize);
+    const timestamps = await fetchTimestampsByBlock(network, batch, batchSize);
+
+    // Map timestamps to their transaction hashes
+    timestamps.forEach((tx, index) => {
+      if (tx && tx.txHash) {
+        results[tx.txHash] = tx.timestamp;
+      }
+    });
+
+    // Add a small delay between batches to avoid rate limiting
+    if (i + batchSize < txInfos.length) {
+      await util.sleep(2000);
+    }
+  }
+  return results;
+}
+
+
+// Helper function to get transaction timestamps in batches
+async function getTransactionTimestampsFromInfoTxHash(network, txInfos, batchSize = 20) {
+  const results = {};
+  for (let i = 0; i < txInfos.length; i += batchSize) {
+    const batch = txInfos.slice(i, i + batchSize);
+    const timestamps = await fetchTimestampsByDstTxHash(network, batch, batchSize);
+
+    // Map timestamps to their transaction hashes
+    timestamps.forEach((tx, index) => {
+      if (tx && tx.txHash) {
+        results[tx.txHash] = tx.timestamp;
+      }
+    });
+
+    // Add a small delay between batches to avoid rate limiting
+    if (i + batchSize < txInfos.length) {
       await util.sleep(2000);
     }
   }

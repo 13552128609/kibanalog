@@ -52,7 +52,9 @@ async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
       const message = log._source.message;
       const timestamp = log._source['@timestamp'];
       // Extract fields using regex
-      const originTxMatch = message.match(/"originTx"\s*:\s*"(0x[a-fA-F0-9]+)"/);
+      const originTxMatch = message.match(/"originTx"\s*:\s*"(0x[a-fA-F0-9]+|[a-fA-F0-9]{64})"/);
+      const chainTypeMatch = message.match(/["']chainType["']\s*:\s*["']([^"']+)["']/);
+      const originChainMatch = message.match(/["']originChain["']\s*:\s*["']([^"']+)["']/);
       const hashDataMatch = message.match(/HashData:\s*(0x[a-fA-F0-9]+)/);
       const duringMatch = message.match(/during\(sec\)=([\d.m]+s?)/);
       const duringActMatch = message.match(/duringAct\(sec\)=([\d.m]+s?)/);
@@ -63,7 +65,9 @@ async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
 
       results.push({
         timestamp,
-        originTx: originTxMatch ? originTxMatch[1] : 'N/A',
+        originTx: originTxMatch ? (originTxMatch[1].startsWith('0x') ? originTxMatch[1] : `0x${originTxMatch[1]}`) : 'N/A',
+        chainType: chainTypeMatch ? chainTypeMatch[1] : 'N/A',
+        originChain: originChainMatch ? originChainMatch[1] : 'N/A',
         originBlock,
         hashData: hashDataMatch ? hashDataMatch[1] : 'N/A',
         during: duringMatch ? parseDuration(duringMatch[1]) : 'N/A',
@@ -73,10 +77,10 @@ async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
     }
 
     // Generate CSV content    
-    const csvHeader = 'Timestamp,OriginTx,OriginBlock,HashData,During(s),DuringAct(s),RawMessage\n';
+    const csvHeader = 'Timestamp,OriginTx,ChainType,OriginChain,OriginBlock,HashData,During(s),DuringAct(s),RawMessage\n';
     const csvRows = results.map(log => {
       const cleanMessage = log.rawMessage.replace(/\n/g, ' ').replace(/"/g, "'");
-      return `"${log.timestamp}","${log.originTx}","${log.originBlock}","${log.hashData}","${log.during}","${log.duringAct}","${cleanMessage}"`;
+      return `"${log.timestamp}","${log.originTx}","${log.chainType}","${log.originChain}","${log.originBlock}","${log.hashData}","${log.during}","${log.duringAct}","${cleanMessage}"`;
     }).join('\n');
 
     const csvContent = csvHeader + csvRows;

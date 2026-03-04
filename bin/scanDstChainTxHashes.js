@@ -25,15 +25,15 @@ async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
       const timestamp = log._source['@timestamp'];
       // Extract fields using regex
 
-      const originTxMatch = message.match(/checkTransOnline checkHash[^\w]*(0x[0-9a-fA-F]+)/);
-      const dstTxHash = message.match(/storemanLockTxHash\s+(0x[0-9a-fA-F]+)/);
+      const originTxMatch = message.match(/checkTransOnline checkHash[^\w]*(0x[0-9a-fA-F]+|[0-9a-fA-F]{64})/);
+      const dstTxHashMatch = message.match(/storemanLockTxHash\s+(0x[0-9a-fA-F]+|[0-9a-fA-F]{64})/);
       
       
-      // Get the on-chain timestamp      
+      // Get the on-chain timestamp
       results.push({
         timestamp,
-        originTx: originTxMatch ? originTxMatch[1] : 'N/A',
-        dstTxHash:dstTxHash ? dstTxHash[1] : 'N/A',
+        originTx: originTxMatch ? (originTxMatch[1].startsWith('0x') ? originTxMatch[1] : `0x${originTxMatch[1]}`) : 'N/A',
+        dstTxHash: dstTxHashMatch ? (dstTxHashMatch[1].startsWith('0x') ? dstTxHashMatch[1] : `0x${dstTxHashMatch[1]}`) : 'N/A',
         rawMessage: message
       });
     }
