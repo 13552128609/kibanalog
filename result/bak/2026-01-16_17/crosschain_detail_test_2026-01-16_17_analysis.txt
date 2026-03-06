@@ -1,0 +1,52 @@
+Cross-chain Transaction Duration Analysis
+==================================================
+
+crossDuring:
+  Count:    49
+  Min:      264.00
+  Max:      1340.00
+  Average:  759.61
+  Median:   809.00
+
+MpcSignDuring:
+  Count:    50
+  Min:      1.52
+  Max:      56.71
+  Average:  20.49
+  Median:   20.41
+
+MpcSignDuringAct:
+  Count:    50
+  Min:      0.63
+  Max:      50.96
+  Average:  15.47
+  Median:   5.65
+
+AgentApproveDuring:
+  Count:    50
+  Min:      -30.00
+  Max:      29.00
+  Average:  4.44
+  Median:   2.50
+
+AgentReqSignDuring:
+  Count:    50
+  Min:      232.00
+  Max:      1352.00
+  Average:  667.58
+  Median:   501.00
+
+AgentMintDuring:
+  Count:    49
+  Min:      0.00
+  Max:      331.00
+  Average:  67.18
+  Median:   1.00
+
+
+
+  吞吐量
+
+  总的交易条数：49
+  总的持续时间： 1768548460-1768547155=1305 最大结束时间-最小开始时间
+  吞吐量：49/1305*60= 2.25条/Min

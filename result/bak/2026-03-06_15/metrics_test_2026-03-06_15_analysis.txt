@@ -1,0 +1,24 @@
+System Metrics Analysis
+==================================================
+
+Load Average:
+  Count:    2
+  Min:      8.43
+  Max:      31.34
+  Average:  19.88
+  Median:   19.88
+
+Disk Usage:
+  Count:    2
+  Min:      78.00%
+  Max:      78.00%
+  Average:  78.00%
+  Median:   78.00%
+
+Memory Used (MB):
+  Count:    2
+  Min:      67318.00 MB
+  Max:      73457.00 MB
+  Average:  70387.50 MB
+  Median:   70387.50 MB
+
