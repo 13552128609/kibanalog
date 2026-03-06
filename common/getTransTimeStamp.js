@@ -29,20 +29,35 @@ async function getTransactionTimestampAda(rpcUrl, txHashes,batchSize){
     const size = batchSize || 20;
     const resultByTxHash = {};
 
+    const strip0x = (h) => (typeof h === 'string' && h.startsWith('0x')) ? h.slice(2) : h;
+    const ensure0x = (h) => {
+        if (!h) return h;
+        return (typeof h === 'string' && h.startsWith('0x')) ? h : `0x${h}`;
+    };
+
+    const keyByStripped = {};
+    hashes.forEach((h) => {
+        const stripped = strip0x(h);
+        if (stripped) {
+            keyByStripped[stripped] = ensure0x(h);
+        }
+    });
+
     for (let i = 0; i < hashes.length; i += size) {
         const batch = hashes.slice(i, i + size);
         try {
             const response = await axios.post(url, {
-                _tx_hashes: batch
+                _tx_hashes: batch.map(strip0x)
             });
 
             const rows = Array.isArray(response.data) ? response.data : [];
             rows.forEach((txData) => {
-                const txHash = txData?.tx_hash;
+                const strippedTxHash = txData?.tx_hash;
                 const timestamp = txData?.tx_timestamp ?? null;
-                if (txHash) {
-                    resultByTxHash[txHash] = {
-                        txHash,
+                if (strippedTxHash) {
+                    const keyTxHash = keyByStripped[strippedTxHash] || ensure0x(strippedTxHash);
+                    resultByTxHash[keyTxHash] = {
+                        txHash: keyTxHash,
                         blockNumber: txData?.block_height ?? null,
                         timestamp,
                         error: timestamp === null ? 'Timestamp not found' : null

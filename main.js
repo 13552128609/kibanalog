@@ -274,9 +274,12 @@ function combineTransactionData(mpcResults, originTimestamps, dstTxHashes, dstTi
       // TS means timestamp in seconds
       result[tx.originTx] = {
         originTx: tx.originTx,
+        originChain: tx.originChain || 'N/A',
+        chainType: tx.chainType || 'N/A',
         dstTxHash: dstTxHash,
         crossStartTS: originTimestamps[tx.originTx] || 'N/A',
         crossEndTS: dstTxHash !== 'N/A' ? (dstTimestamps[dstTxHash] || 'N/A') : 'N/A',
+        
 
         // 整个跨链时长
         crossDuring: (() => {
@@ -299,7 +302,8 @@ function combineTransactionData(mpcResults, originTimestamps, dstTxHashes, dstTi
 
         // 凑够theshold个approve的时长
         AgentApproveDuring: tx.during !== 'N/A' && tx.duringAct !== 'N/A'
-          ? Math.round(parseInt(tx.during) - parseFloat(tx.duringAct)).toString()
+          //? Math.round(parseInt(tx.during) - parseFloat(tx.duringAct)).toString()
+          ? (parseFloat(tx.during) - parseFloat(tx.duringAct)).toFixed(4)
           : 'N/A',
 
         // Agent请求签名时长 (从原链lock到发起mpc签名)
