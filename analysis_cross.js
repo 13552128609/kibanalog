@@ -265,9 +265,40 @@ async function main() {
       stats[field] = calculateStats(data, field);
     });
 
+    const validCrossRecords = data.filter((row) => {
+      const start = Number.parseFloat(row.crossStartTS);
+      const end = Number.parseFloat(row.crossEndTS);
+      return Number.isFinite(start) && Number.isFinite(end);
+    });
+
+    const minCrossStartTS = validCrossRecords.length
+      ? Math.min(...validCrossRecords.map(r => Number.parseFloat(r.crossStartTS)))
+      : null;
+    const maxCrossEndTS = validCrossRecords.length
+      ? Math.max(...validCrossRecords.map(r => Number.parseFloat(r.crossEndTS)))
+      : null;
+    const crossWindowSeconds = (minCrossStartTS !== null && maxCrossEndTS !== null)
+      ? (maxCrossEndTS - minCrossStartTS)
+      : null;
+    const throughputTxPerSec = (crossWindowSeconds && crossWindowSeconds > 0)
+      ? (validCrossRecords.length / crossWindowSeconds)
+      : null;
+    const throughputTxPerMin = (throughputTxPerSec !== null)
+      ? (throughputTxPerSec * 60)
+      : null;
+
     // Generate report
     let report = 'Cross-chain Transaction Duration Analysis\n';
     report += '='.repeat(50) + '\n\n';
+
+    report += 'Throughput (by crossStartTS/crossEndTS)\n';
+    report += '-'.repeat(50) + '\n';
+    report += `  Valid Records:        ${validCrossRecords.length}\n`;
+    report += `  min(crossStartTS):    ${minCrossStartTS !== null ? Math.floor(minCrossStartTS) : 'N/A'}\n`;
+    report += `  max(crossEndTS):      ${maxCrossEndTS !== null ? Math.floor(maxCrossEndTS) : 'N/A'}\n`;
+    report += `  Window Seconds:       ${crossWindowSeconds !== null ? crossWindowSeconds.toFixed(2) : 'N/A'}\n`;
+    report += `  Throughput (tx/s):    ${throughputTxPerSec !== null ? throughputTxPerSec.toFixed(6) : 'N/A'}\n`;
+    report += `  Throughput (tx/min):  ${throughputTxPerMin !== null ? throughputTxPerMin.toFixed(4) : 'N/A'}\n\n`;
     
     fields.forEach(field => {
       const s = stats[field];

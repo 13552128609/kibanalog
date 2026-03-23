@@ -1,0 +1,54 @@
+Cross-chain Transaction Duration Analysis
+==================================================
+
+Throughput (by crossStartTS/crossEndTS)
+--------------------------------------------------
+  Valid Records:        50
+  min(crossStartTS):    1774260185
+  max(crossEndTS):      1774260290
+  Window Seconds:       105.00
+  Throughput (tx/s):    0.476190
+  Throughput (tx/min):  28.5714
+
+crossDuring:
+  Count:    50
+  Min:      10.00
+  Max:      35.00
+  Average:  20.28
+  Median:   20.00
+
+MpcSignDuring:
+  Count:    50
+  Min:      3.41
+  Max:      8.35
+  Average:  6.39
+  Median:   6.25
+
+MpcSignDuringAct:
+  Count:    50
+  Min:      0.52
+  Max:      2.53
+  Average:  1.78
+  Median:   1.90
+
+AgentApproveDuring:
+  Count:    50
+  Min:      2.83
+  Max:      5.85
+  Average:  4.61
+  Median:   4.44
+
+AgentReqSignDuring:
+  Count:    50
+  Min:      3.00
+  Max:      170.00
+  Average:  105.42
+  Median:   115.00
+
+AgentMintDuring:
+  Count:    50
+  Min:      0.00
+  Max:      3.00
+  Average:  0.06
+  Median:   0.00
+
