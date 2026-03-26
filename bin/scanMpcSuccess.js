@@ -47,10 +47,28 @@ async function getLogs(net, keywords, fromDateTime, toDateTime, size) {
   try {
     const logs = await getCommonLogs(net, keywords, fromDateTime,toDateTime, size);
     const results = [];
+
+    const parseTimestampFromMessage = (message) => {
+      if (!message || typeof message !== 'string') return 'N/A';
+
+      const m = message.match(/^(\d{4}-\d{2}-\d{2})\s+\d{2}:\d{2}\s+([+-]\d{2}:\d{2}).*?\[\d{2}-\d{2}\|(\d{2}:\d{2}:\d{2}(?:\.\d{3})?)\]/);
+      if (!m) return 'N/A';
+
+      const date = m[1];
+      const tz = m[2];
+      const time = m[3];
+
+      if (tz === '+00:00' || tz === '-00:00') {
+        return `${date}T${time}Z`;
+      }
+
+      return `${date}T${time}${tz}`;
+    };
+
     // Process each log entry
     for (const log of logs) {
       const message = log._source.message;
-      const timestamp = log._source['@timestamp'];
+      const timestamp = parseTimestampFromMessage(message);
       // Extract fields using regex
       const originTxMatch = message.match(/"originTx"\s*:\s*"(0x[a-fA-F0-9]+|[a-fA-F0-9]{64})"/);
       const chainTypeMatch = message.match(/["']chainType["']\s*:\s*["']([^"']+)["']/);
