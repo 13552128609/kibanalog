@@ -181,3 +181,6 @@ main().catch((e) => {
   console.error(e);
   process.exit(1);
 });
+
+
+// node checkVersion.js --version 3.23.0 --grpName 0x000000000000000000000000000000000000000000000041726965735f303639
