@@ -1,0 +1,1875 @@
+[
+	{
+		"inputs": [],
+		"name": "acceptOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			}
+		],
+		"name": "addActiveGroupId",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "admin",
+				"type": "address"
+			}
+		],
+		"name": "addAdmin",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "admin",
+				"type": "address"
+			}
+		],
+		"name": "AddAdmin",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_addr",
+				"type": "address"
+			}
+		],
+		"name": "addHq",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_newOwner",
+				"type": "address"
+			}
+		],
+		"name": "changeOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "contribute",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "delegateClaim",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "delegateIn",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "delegateIncentiveClaim",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "delegateOut",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_addr",
+				"type": "address"
+			}
+		],
+		"name": "delHq",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "node",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "flag",
+				"type": "bool"
+			}
+		],
+		"name": "HqSetEvent",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "incentiveCandidator",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "partClaim",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "partIn",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "partOut",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wk",
+				"type": "address"
+			}
+		],
+		"name": "recordSmSlash",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "admin",
+				"type": "address"
+			}
+		],
+		"name": "removeAdmin",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "admin",
+				"type": "address"
+			}
+		],
+		"name": "RemoveAdmin",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			}
+		],
+		"name": "select",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "chain1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "chain2",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "co",
+				"type": "uint256"
+			}
+		],
+		"name": "setChainTypeCo",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "metricAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "gpkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "quotaAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "posAddr",
+				"type": "address"
+			}
+		],
+		"name": "setDependence",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_addr",
+				"type": "address"
+			}
+		],
+		"name": "setGlobalGroupScAddr",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes",
+				"name": "gpk1",
+				"type": "bytes"
+			},
+			{
+				"internalType": "bytes",
+				"name": "gpk2",
+				"type": "bytes"
+			}
+		],
+		"name": "setGpk",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "halt",
+				"type": "bool"
+			}
+		],
+		"name": "setHalt",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "indexs",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "enum GpkTypes.SlashType[]",
+				"name": "slashTypes",
+				"type": "uint8[]"
+			}
+		],
+		"name": "setInvalidSm",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "isContinue",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "smgID",
+				"type": "bytes32"
+			}
+		],
+		"name": "smgTransfer",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "stakeAppend",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "stakeClaim",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes",
+				"name": "PK",
+				"type": "bytes"
+			},
+			{
+				"internalType": "bytes",
+				"name": "enodeID",
+				"type": "bytes"
+			}
+		],
+		"name": "stakeIn",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "stakeIncentiveClaim",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "stakeOut",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			}
+		],
+		"name": "storemanGroupDismiss",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "dismissTime",
+				"type": "uint256"
+			}
+		],
+		"name": "StoremanGroupDismissedEvent",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "bytes32",
+						"name": "groupId",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "preGroupId",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "workTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "registerDuration",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "memberCountDesign",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "threshold",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "chain1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "chain2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "curve1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "curve2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minStakeIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minDelegateIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minPartIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "delegateFee",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct StoremanType.StoremanGroupInput",
+				"name": "smg",
+				"type": "tuple"
+			},
+			{
+				"internalType": "address[]",
+				"name": "wkAddrs",
+				"type": "address[]"
+			},
+			{
+				"internalType": "address[]",
+				"name": "senders",
+				"type": "address[]"
+			}
+		],
+		"name": "storemanGroupRegisterStart",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "preGroupId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "workStart",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "workDuration",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "registerDuration",
+				"type": "uint256"
+			}
+		],
+		"name": "StoremanGroupRegisterStartEvent",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			}
+		],
+		"name": "StoremanGroupSetGpkEvent",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "storemanGroupContributeEvent",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			}
+		],
+		"name": "storemanGroupUnregister",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "chain1",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "chain2",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "curve1",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "curve2",
+				"type": "uint256"
+			}
+		],
+		"name": "updateGroupChainEvent",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "enum StoremanType.GroupStatus",
+				"name": "status",
+				"type": "uint8"
+			}
+		],
+		"name": "updateGroupStatus",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "backupCount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "standaloneWeight",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "DelegationMulti",
+				"type": "uint256"
+			}
+		],
+		"name": "updateStoremanConf",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "deAddr",
+				"type": "address"
+			}
+		],
+		"name": "checkCanDelegatorClaim",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "pnAddr",
+				"type": "address"
+			}
+		],
+		"name": "checkCanPartnerClaim",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "checkCanStakeClaim",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "checkCanStakeOut",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			}
+		],
+		"name": "checkGroupDismissable",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "id",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "uint256",
+				"name": "day",
+				"type": "uint256"
+			}
+		],
+		"name": "checkGroupIncentive",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "createGpkAddr",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "epochId",
+				"type": "uint256"
+			}
+		],
+		"name": "getActiveGroupIds",
+		"outputs": [
+			{
+				"internalType": "bytes32[]",
+				"name": "",
+				"type": "bytes32[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "chain1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "chain2",
+				"type": "uint256"
+			}
+		],
+		"name": "getChainTypeCo",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "co",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getDependence",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "metricAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "gpkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "quotaAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "posAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "listGroupAddr",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "id",
+				"type": "bytes32"
+			}
+		],
+		"name": "getDeposit",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getGlobalGroupScAddr",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getGlobalIncentive",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "contribution",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalReward",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "getSelectedSmInfo",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes",
+				"name": "PK",
+				"type": "bytes"
+			},
+			{
+				"internalType": "bytes",
+				"name": "enodeId",
+				"type": "bytes"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			}
+		],
+		"name": "getSelectedSmNumber",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			}
+		],
+		"name": "getSelectedStoreman",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "getSmDelegatorAddr",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "deAddr",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "deAddr",
+				"type": "address"
+			}
+		],
+		"name": "getSmDelegatorInfo",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "deposit",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "incentive",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "quited",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "deAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "day",
+				"type": "uint256"
+			}
+		],
+		"name": "getSmDelegatorInfoIncentive",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "getSmPartnerAddr",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "pkAddr",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "pnAddr",
+				"type": "address"
+			}
+		],
+		"name": "getSmPartnerInfo",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "deposit",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "quited",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getStoremanConf",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "backupCount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "standaloneWeight",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "delegationMulti",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "id",
+				"type": "bytes32"
+			}
+		],
+		"name": "getStoremanGroupConfig",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "enum StoremanType.GroupStatus",
+				"name": "status",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint256",
+				"name": "deposit",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "chain1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "chain2",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "curve1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "curve2",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "gpk1",
+				"type": "bytes"
+			},
+			{
+				"internalType": "bytes",
+				"name": "gpk2",
+				"type": "bytes"
+			},
+			{
+				"internalType": "uint256",
+				"name": "startTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "endTime",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "id",
+				"type": "bytes32"
+			}
+		],
+		"name": "getStoremanGroupInfo",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "bytes32",
+						"name": "groupId",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "enum StoremanType.GroupStatus",
+						"name": "status",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "deposit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "depositWeight",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "selectedCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "memberCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "whiteCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "whiteCountAll",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "startTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "endTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "registerTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "registerDuration",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "memberCountDesign",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "threshold",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "chain1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "chain2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "curve1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "curve2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tickedCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minStakeIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minDelegateIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minPartIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "crossIncoming",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "gpk1",
+						"type": "bytes"
+					},
+					{
+						"internalType": "bytes",
+						"name": "gpk2",
+						"type": "bytes"
+					},
+					{
+						"internalType": "uint256",
+						"name": "delegateFee",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct StoremanType.StoremanGroupInfo",
+				"name": "info",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "id",
+				"type": "bytes32"
+			}
+		],
+		"name": "getStoremanGroupStatus",
+		"outputs": [
+			{
+				"internalType": "enum StoremanType.GroupStatus",
+				"name": "status",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint256",
+				"name": "startTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "endTime",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "day",
+				"type": "uint256"
+			}
+		],
+		"name": "getStoremanIncentive",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "incentive",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "wkAddr",
+				"type": "address"
+			}
+		],
+		"name": "getStoremanInfo",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes",
+						"name": "enodeID",
+						"type": "bytes"
+					},
+					{
+						"internalType": "bytes",
+						"name": "PK",
+						"type": "bytes"
+					},
+					{
+						"internalType": "address",
+						"name": "wkAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "bool",
+						"name": "isWhite",
+						"type": "bool"
+					},
+					{
+						"internalType": "bool",
+						"name": "quited",
+						"type": "bool"
+					},
+					{
+						"internalType": "uint256",
+						"name": "delegatorCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "delegateDeposit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "partnerCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "partnerDeposit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "crossIncoming",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "slashedCount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "incentivedDelegator",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "incentivedDay",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "groupId",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "nextGroupId",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "deposit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "incentive",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct StoremanType.StoremanInfo",
+				"name": "si",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "groupId",
+				"type": "bytes32"
+			}
+		],
+		"name": "getThresholdByGrpId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "halted",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "HqKey",
+		"outputs": [
+			{
+				"internalType": "bytes",
+				"name": "",
+				"type": "bytes"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "innerKey",
+		"outputs": [
+			{
+				"internalType": "bytes",
+				"name": "",
+				"type": "bytes"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_addr",
+				"type": "address"
+			}
+		],
+		"name": "isHq",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "key",
+		"outputs": [
+			{
+				"internalType": "bytes",
+				"name": "",
+				"type": "bytes"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "mapAdmin",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "metric",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "newOwner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "quotaInst",
+		"outputs": [
+			{
+				"internalType": "contract IQuota",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]

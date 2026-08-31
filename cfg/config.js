@@ -43,31 +43,9 @@ var  urlConfig = {
   }
 }
 
-// var kibanaConfig = {
-//     usename: 'wandevs',
-//     password: 'wanswap20210401',
-//     keywords: {
-//       "main":{
-//           successMpc:["SignMpcTransaction", "successfully","\"originChain\":\"ARB\"","\"chainType\":\"WAN\""],
-//           recievedMpc:["@@@@@SignByApprove begin","\"originChain\":\"ARB\"","\"chainType\":\"WAN\""],
-//           dstTxHashes:["checkTransOnline checkHash", "storeman0xb03a7416e0793e77169845ca81303781096e4c03"],
-//           metrics:["ip-10-1-1-30", "cpu_usage", "cpu_cores", "mem_total", "mem_used", "mem_free", "disk_total", "disk_used", "disk_usage", "load_avg"],
-//       },
-//       "test":{
-//           successMpc:["SignMpcTransaction", "successfully","\"originChain\":\"ARB\"","\"chainType\":\"WAN\""],          
-//           recievedMpc:["@@@@@SignByApprove begin","\"originChain\":\"ARB\"","\"chainType\":\"WAN\""],
-//           dstTxHashes:["checkTransOnline checkHash", "storeman0x5c770cbf582d770b93ca90adad7e6bd33fabc44c"],
-//           metrics:["ip-10-1-1-30", "cpu_usage", "cpu_cores", "mem_total", "mem_used", "mem_free", "disk_total", "disk_used", "disk_usage", "load_avg"],
-//       }
-//     },
-//     fromTime:'',
-//     toTime:'',
-//     size:'', 
-// }
-
 var kibanaConfig = {
-    usename: 'wandevs',
-    password: 'wanswap20210401',
+    usename: process.env.KIBANA_USERNAME,
+    password: process.env.KIBANA_PASSWORD,
     keywords: {
       "main":{
           successMpc:["SignMpcTransaction", "successfully"],

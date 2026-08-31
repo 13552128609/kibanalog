@@ -4,14 +4,21 @@ const axios = require('axios');
 const util = require('../util/util');
 
 async function getCommonLogs(net, keywords, formatDateTime,toDateTime, size) {
-  const url = 'http://log.wanchain.org:9200/_search?pretty';
+  //const url = 'http://log.wanchain.org:9200/_search?pretty';
+  //const url = 'https://log.wanscan.org:9200/_search?pretty';
+  const url = 'https://log.wanscan.org:9200/main-*/_search?pretty';
+
+  if (!kibanaConfig.usename || !kibanaConfig.password) {
+    throw new Error('Missing Kibana credentials. Please set environment variables KIBANA_USERNAME and KIBANA_PASSWORD.');
+  }
+
   const queryData = {
     size: size,
     sort: [{ "@timestamp": { "order": "desc" } }],
     query: {
       bool: {
         must: [
-          { match_phrase: { "type": net } },
+          // { match_phrase: { "type": net } },
         ],
         filter: [{
           range: {
@@ -26,10 +33,11 @@ async function getCommonLogs(net, keywords, formatDateTime,toDateTime, size) {
   };
 
   for (let keyword of keywords) {
-    queryData.query.bool.must.push({ match_phrase: { "message": keyword } });
+    queryData.query.bool.must.push({ match_phrase: { "message": keyword } });    
   }
 
-  //console.log(`getCommonLogs queryData: ${util.stringifyObject(queryData)}`);
+  // console.log(`getCommonLogs url: ${url}`);
+  // console.log(`getCommonLogs queryData: ${util.stringifyObject(queryData)}`);
   try {
     const response = await axios.post(url, queryData, {
       auth: {
