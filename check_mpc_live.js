@@ -15,7 +15,7 @@ function toIso(dt) {
 
 function defaultFromTo() {
   const to = new Date();
-  const from = new Date(to.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const from = new Date(to.getTime() - 30 * 60 * 1000);
   return { from: toIso(from), to: toIso(to) };
 }
 
@@ -71,24 +71,9 @@ async function getWorkingAddresses({ network, grpName, rpc }) {
   for (const groupId of grpIdCandidates) {
     try {
       console.log(`groupId=${groupId}`);
-      const num = await smg.getSelectedSmNumber(groupId);
-      const n = Number(num);
-      if (!Number.isFinite(n) || n <= 0) {
-        continue;
-      }
-
-      const results = [];
-      for (let i = 0; i < n; i += 1) {
-        const info = await smg.getSelectedSmInfo(groupId, i);
-        const wkAddr = info?.wkAddr?.toString?.() || info?.[0];
-        const enodeIdBytes = info?.enodeId ?? info?.[2];
-        const enodeHex = enodeIdBytes ? ethers.hexlify(enodeIdBytes) : '';
-        const enodeShort = enodeHex && enodeHex.length >= 10 ? enodeHex.slice(0, 10).toLowerCase() : enodeHex.toLowerCase();
-        results.push({ wkAddr: String(wkAddr).toLowerCase(), enodeId: enodeShort });
-      }
-
-      if (results.length > 0) {
-        return results;
+      const addrs = await smg.getSelectedStoreman(groupId);
+      if (Array.isArray(addrs) && addrs.length > 0) {
+        return addrs.map(a => a.toLowerCase());
       }
     } catch (e) {
       lastErr = e;
@@ -101,15 +86,22 @@ async function getWorkingAddresses({ network, grpName, rpc }) {
   return [];
 }
 
-function buildKeywords(enodeId) {
+function shortAddr(addr) {
+  if (typeof addr !== 'string') return String(addr);
+  const a = addr.toLowerCase();
+  if (!a.startsWith('0x') || a.length < 10) return addr;
+  return `${a.slice(0, 6)}...${a.slice(-4)}`;
+}
+
+function buildKeywords(wkAddr) {
   return [
-    'starting deepsea_mpc',
-    `selfEnodeId =${enodeId}`
+    'mpcHeartBeat[mpc working]',
+    `workingAddress =${shortAddr(wkAddr)}`
   ];
 }
 
-async function checkMpcRebootForNode({ logType, wkAddr, enodeId, fromDateTime, toDateTime, size }) {
-  const keywords = buildKeywords(enodeId);
+async function checkMpcLiveForAddress({ logType, wkAddr, fromDateTime, toDateTime, size, allowEmpty }) {
+  const keywords = buildKeywords(wkAddr);
 
   console.log(`logType=${logType} fromDateTime=${fromDateTime} toDateTime=${toDateTime} size=${size}`);
   console.log(`keywords=${JSON.stringify(keywords)}`);
@@ -127,6 +119,9 @@ async function checkMpcRebootForNode({ logType, wkAddr, enodeId, fromDateTime, t
     console.log(`logs=${JSON.stringify(logs)}`);
   }
 
+  if (allowEmpty) {
+    return true;
+  }
   return Array.isArray(logs) && logs.length > 0;
 }
 
@@ -149,50 +144,53 @@ async function main() {
     throw new Error(`Invalid --size: ${argv.size}`);
   }
 
-  const nodes = await getWorkingAddresses({
+  const workingAddresses = await getWorkingAddresses({
     network: argv.network,
     grpName: argv.grpName,
     rpc: argv.rpc,
   });
 
-  if (!nodes.length) {
+  if (!workingAddresses.length) {
     console.log(`No workingAddresses found for grpName=${argv.grpName} on network=${argv.network}`);
     return;
   }
 
-  for (const n of nodes) {
-    console.log(`${n.wkAddr} enodeId=${n.enodeId}`);
+  for (const wkAddr of workingAddresses) {
+    console.log(wkAddr);
   }
 
-  const notRebooted = [];
-  for (const n of nodes) {
-    let ok = false;
-    const keywords = buildKeywords(n.enodeId);
+  const notWorking = [];
+  let idx = 0;
+  for (const wkAddr of workingAddresses) {
+    let working = false;
+    const keywords = buildKeywords(wkAddr);
     try {
-      ok = await checkMpcRebootForNode({
+      working = await checkMpcLiveForAddress({
         logType: argv.logType,
-        wkAddr: n.wkAddr,
-        enodeId: n.enodeId,
+        wkAddr,
         fromDateTime: argv.fromDateTime,
         toDateTime: argv.toDateTime,
         size,
+        allowEmpty: idx === 0,
       });
     } catch (e) {
-      ok = false;
+      working = false;
     }
 
-    if (!ok) {
-      notRebooted.push({ wkAddr: n.wkAddr, enodeId: n.enodeId, keywords });
+    if (!working) {
+      notWorking.push({ wkAddr, keywords });
     }
+
+    idx += 1;
   }
 
-  if (notRebooted.length === 0) {
-    console.log('All nodes have reboot logs.');
+  if (notWorking.length === 0) {
+    console.log('All nodes are working.');
     return;
   }
 
-  for (const item of notRebooted) {
-    console.log(`\x1b[1m\x1b[31mNO_REBOOT_LOG\x1b[0m \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m enodeId=${item.enodeId} keywords=${JSON.stringify(item.keywords)}`);
+  for (const item of notWorking) {
+    console.log(`\x1b[1m\x1b[31mNOT_WORKING\x1b[0m \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m keywords=${JSON.stringify(item.keywords)}`);
   }
 }
 
@@ -202,13 +200,13 @@ main().catch((e) => {
 });
 
 
-// node ./checkMpcReboot.js --grpName 0x000000000000000000000000000000000000000000000041726965735f303639
+// node check_mpc_live.js --grpName 0x000000000000000000000000000000000000000000000041726965735f303639
 
 
 /*
 response:
 
-NO_REBOOT_LOG 0x18316a1efe4d4ea853708097d424f82cddd1acca enodeId=0xf367f94c keywords=["starting deepsea_mpc","selfEnodeId =0xf367f94c"]
-NO_REBOOT_LOG 0x7f1553a3920cd6c39e4452875fc4349884a03b9e enodeId=0x8219d8d4 keywords=["starting deepsea_mpc","selfEnodeId =0x8219d8d4"]
+NOT_WORKING 0x18316a1efe4d4ea853708097d424f82cddd1acca keywords=["GetDataForApproveUni successfully","workingAddress =0x1831...acca"]
+NOT_WORKING 0x7f1553a3920cd6c39e4452875fc4349884a03b9e keywords=["GetDataForApproveUni successfully","workingAddress =0x7f15...3b9e"]
 
 */
