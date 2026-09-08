@@ -8,6 +8,40 @@ const { getCommonLogs } = require('./common/getLogs');
 const SMG_CONTRACT_ADDRESS = '0x1E7450D5d17338a348C5438546f0b4D0A5fbeaB6';
 const SMG_ABI_PATH = path.join(__dirname, './abi/abi.smg.json');
 
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getCommonLogsWithRetry({ logType, keywords, fromDateTime, toDateTime, size, retries = 5 }) {
+  let lastErr;
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      return await getCommonLogs(logType, keywords, fromDateTime, toDateTime, size);
+    } catch (e) {
+      lastErr = e;
+      if (attempt < retries) {
+        await sleep(500 * attempt);
+      }
+    }
+  }
+  throw lastErr;
+}
+
+async function runWithRetry(fn, retries = 5) {
+  let lastErr;
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      if (attempt < retries) {
+        await sleep(500 * attempt);
+      }
+    }
+  }
+  throw lastErr;
+}
+
 function toIso(dt) {
   if (dt instanceof Date) return dt.toISOString();
   return new Date(dt).toISOString();
@@ -95,7 +129,14 @@ async function checkUpgradeForAddress({ logType, wkAddr, version, fromDateTime, 
 
   console.log(`logType=${logType} fromDateTime=${fromDateTime} toDateTime=${toDateTime} size=${size}`);
   console.log(`keywords=${JSON.stringify(keywords)}`);
-  const logs = await getCommonLogs(logType, keywords, fromDateTime, toDateTime, size);
+  const logs = await getCommonLogsWithRetry({
+    logType,
+    keywords,
+    fromDateTime,
+    toDateTime,
+    size,
+    retries: 5,
+  });
 
   const len = Array.isArray(logs) ? logs.length : 0;
   console.log(`logs.length=${len}`);
@@ -147,24 +188,27 @@ async function main() {
   }
 
   const notUpgraded = [];
+  let idx = 0;
   for (const wkAddr of workingAddresses) {
     let upgraded = false;
     try {
-      upgraded = await checkUpgradeForAddress({
+      upgraded = await runWithRetry(() => checkUpgradeForAddress({
         logType: argv.logType,
         wkAddr,
         version: argv.version,
         fromDateTime: argv.fromDateTime,
         toDateTime: argv.toDateTime,
         size,
-      });
+      }), 5);
     } catch (e) {
       upgraded = false;
     }
 
     if (!upgraded) {
-      notUpgraded.push(wkAddr);
+      notUpgraded.push({ contractIndex: idx, wkAddr });
     }
+
+    idx += 1;
   }
 
   if (notUpgraded.length === 0) {
@@ -172,8 +216,8 @@ async function main() {
     return;
   }
 
-  for (const [i, wkAddr] of notUpgraded.entries()) {
-    console.log(`\x1b[1m\x1b[31mNOT_UPGRADED\x1b[0m index=${i} \x1b[1m\x1b[31m${wkAddr}\x1b[0m`);
+  for (const item of notUpgraded) {
+    console.log(`\x1b[1m\x1b[31mNOT_UPGRADED\x1b[0m index=${item.contractIndex} \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m`);
   }
 }
 

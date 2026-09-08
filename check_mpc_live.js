@@ -8,6 +8,40 @@ const { getCommonLogs } = require('./common/getLogs');
 const SMG_CONTRACT_ADDRESS = '0x1E7450D5d17338a348C5438546f0b4D0A5fbeaB6';
 const SMG_ABI_PATH = path.join(__dirname, './abi/abi.smg.json');
 
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getCommonLogsWithRetry({ logType, keywords, fromDateTime, toDateTime, size, retries = 5 }) {
+  let lastErr;
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      return await getCommonLogs(logType, keywords, fromDateTime, toDateTime, size);
+    } catch (e) {
+      lastErr = e;
+      if (attempt < retries) {
+        await sleep(500 * attempt);
+      }
+    }
+  }
+  throw lastErr;
+}
+
+async function runWithRetry(fn, retries = 5) {
+  let lastErr;
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      if (attempt < retries) {
+        await sleep(500 * attempt);
+      }
+    }
+  }
+  throw lastErr;
+}
+
 function toIso(dt) {
   if (dt instanceof Date) return dt.toISOString();
   return new Date(dt).toISOString();
@@ -105,7 +139,14 @@ async function checkMpcLiveForAddress({ logType, wkAddr, fromDateTime, toDateTim
 
   console.log(`logType=${logType} fromDateTime=${fromDateTime} toDateTime=${toDateTime} size=${size}`);
   console.log(`keywords=${JSON.stringify(keywords)}`);
-  const logs = await getCommonLogs(logType, keywords, fromDateTime, toDateTime, size);
+  const logs = await getCommonLogsWithRetry({
+    logType,
+    keywords,
+    fromDateTime,
+    toDateTime,
+    size,
+    retries: 5,
+  });
 
   const len = Array.isArray(logs) ? logs.length : 0;
   console.log(`logs.length=${len}`);
@@ -165,20 +206,20 @@ async function main() {
     let working = false;
     const keywords = buildKeywords(wkAddr);
     try {
-      working = await checkMpcLiveForAddress({
+      working = await runWithRetry(() => checkMpcLiveForAddress({
         logType: argv.logType,
         wkAddr,
         fromDateTime: argv.fromDateTime,
         toDateTime: argv.toDateTime,
         size,
         allowEmpty: idx === 0,
-      });
+      }), 5);
     } catch (e) {
       working = false;
     }
 
     if (!working) {
-      notWorking.push({ wkAddr, keywords });
+      notWorking.push({ contractIndex: idx, wkAddr, keywords });
     }
 
     idx += 1;
@@ -189,8 +230,8 @@ async function main() {
     return;
   }
 
-  for (const [i, item] of notWorking.entries()) {
-    console.log(`\x1b[1m\x1b[31mNOT_WORKING\x1b[0m index=${i} \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m keywords=${JSON.stringify(item.keywords)}`);
+  for (const item of notWorking) {
+    console.log(`\x1b[1m\x1b[31mNOT_WORKING\x1b[0m index=${item.contractIndex} \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m keywords=${JSON.stringify(item.keywords)}`);
   }
 }
 

@@ -8,6 +8,40 @@ const { getCommonLogs } = require('./common/getLogs');
 const SMG_CONTRACT_ADDRESS = '0x1E7450D5d17338a348C5438546f0b4D0A5fbeaB6';
 const SMG_ABI_PATH = path.join(__dirname, './abi/abi.smg.json');
 
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getCommonLogsWithRetry({ logType, keywords, fromDateTime, toDateTime, size, retries = 5 }) {
+  let lastErr;
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      return await getCommonLogs(logType, keywords, fromDateTime, toDateTime, size);
+    } catch (e) {
+      lastErr = e;
+      if (attempt < retries) {
+        await sleep(500 * attempt);
+      }
+    }
+  }
+  throw lastErr;
+}
+
+async function runWithRetry(fn, retries = 5) {
+  let lastErr;
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      if (attempt < retries) {
+        await sleep(500 * attempt);
+      }
+    }
+  }
+  throw lastErr;
+}
+
 function toIso(dt) {
   if (dt instanceof Date) return dt.toISOString();
   return new Date(dt).toISOString();
@@ -84,7 +118,7 @@ async function getWorkingAddresses({ network, grpName, rpc }) {
         const enodeIdBytes = info?.enodeId ?? info?.[2];
         const enodeHex = enodeIdBytes ? ethers.hexlify(enodeIdBytes) : '';
         const enodeShort = enodeHex && enodeHex.length >= 10 ? enodeHex.slice(0, 10).toLowerCase() : enodeHex.toLowerCase();
-        results.push({ wkAddr: String(wkAddr).toLowerCase(), enodeId: enodeShort });
+        results.push({ contractIndex: i, wkAddr: String(wkAddr).toLowerCase(), enodeId: enodeShort });
       }
 
       if (results.length > 0) {
@@ -113,7 +147,14 @@ async function checkMpcRebootForNode({ logType, wkAddr, enodeId, fromDateTime, t
 
   console.log(`logType=${logType} fromDateTime=${fromDateTime} toDateTime=${toDateTime} size=${size}`);
   console.log(`keywords=${JSON.stringify(keywords)}`);
-  const logs = await getCommonLogs(logType, keywords, fromDateTime, toDateTime, size);
+  const logs = await getCommonLogsWithRetry({
+    logType,
+    keywords,
+    fromDateTime,
+    toDateTime,
+    size,
+    retries: 5,
+  });
 
   const len = Array.isArray(logs) ? logs.length : 0;
   console.log(`logs.length=${len}`);
@@ -161,7 +202,7 @@ async function main() {
   }
 
   for (const n of nodes) {
-    console.log(`${n.wkAddr} enodeId=${n.enodeId}`);
+    console.log(`index=${n.contractIndex} ${n.wkAddr} enodeId=${n.enodeId}`);
   }
 
   const notRebooted = [];
@@ -169,20 +210,20 @@ async function main() {
     let ok = false;
     const keywords = buildKeywords(n.enodeId);
     try {
-      ok = await checkMpcRebootForNode({
+      ok = await runWithRetry(() => checkMpcRebootForNode({
         logType: argv.logType,
         wkAddr: n.wkAddr,
         enodeId: n.enodeId,
         fromDateTime: argv.fromDateTime,
         toDateTime: argv.toDateTime,
         size,
-      });
+      }), 5);
     } catch (e) {
       ok = false;
     }
 
     if (!ok) {
-      notRebooted.push({ wkAddr: n.wkAddr, enodeId: n.enodeId, keywords });
+      notRebooted.push({ contractIndex: n.contractIndex, wkAddr: n.wkAddr, enodeId: n.enodeId, keywords });
     }
   }
 
@@ -191,8 +232,8 @@ async function main() {
     return;
   }
 
-  for (const [i, item] of notRebooted.entries()) {
-    console.log(`\x1b[1m\x1b[31mNO_REBOOT_LOG\x1b[0m index=${i} \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m enodeId=${item.enodeId} keywords=${JSON.stringify(item.keywords)}`);
+  for (const item of notRebooted) {
+    console.log(`\x1b[1m\x1b[31mNO_REBOOT_LOG\x1b[0m index=${item.contractIndex} \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m enodeId=${item.enodeId} keywords=${JSON.stringify(item.keywords)}`);
   }
 }
 
