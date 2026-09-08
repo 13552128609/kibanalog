@@ -189,8 +189,8 @@ async function main() {
     return;
   }
 
-  for (const item of notWorking) {
-    console.log(`\x1b[1m\x1b[31mNOT_WORKING\x1b[0m \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m keywords=${JSON.stringify(item.keywords)}`);
+  for (const [i, item] of notWorking.entries()) {
+    console.log(`\x1b[1m\x1b[31mNOT_WORKING\x1b[0m index=${i} \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m keywords=${JSON.stringify(item.keywords)}`);
   }
 }
 

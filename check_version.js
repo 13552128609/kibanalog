@@ -172,8 +172,8 @@ async function main() {
     return;
   }
 
-  for (const wkAddr of notUpgraded) {
-    console.log(`\x1b[1m\x1b[31mNOT_UPGRADED\x1b[0m \x1b[1m\x1b[31m${wkAddr}\x1b[0m`);
+  for (const [i, wkAddr] of notUpgraded.entries()) {
+    console.log(`\x1b[1m\x1b[31mNOT_UPGRADED\x1b[0m index=${i} \x1b[1m\x1b[31m${wkAddr}\x1b[0m`);
   }
 }
 

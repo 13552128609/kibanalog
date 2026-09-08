@@ -191,8 +191,8 @@ async function main() {
     return;
   }
 
-  for (const [i, item] of notRebooted.entries()) {
-    console.log(`\x1b[1m\x1b[31mNO_REBOOT_LOG\x1b[0m index=${i} \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m enodeId=${item.enodeId} keywords=${JSON.stringify(item.keywords)}`);
+  for (const item of notRebooted) {
+    console.log(`\x1b[1m\x1b[31mNO_REBOOT_LOG\x1b[0m \x1b[1m\x1b[31m${item.wkAddr}\x1b[0m enodeId=${item.enodeId} keywords=${JSON.stringify(item.keywords)}`);
   }
 }
 
@@ -202,7 +202,7 @@ main().catch((e) => {
 });
 
 
-// node ./check_mpc_reboot.js --grpName 0x000000000000000000000000000000000000000000000041726965735f303639
+// node ./checkMpcReboot.js --grpName 0x000000000000000000000000000000000000000000000041726965735f303639
 
 
 /*
